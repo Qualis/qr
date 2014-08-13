@@ -17,7 +17,8 @@
                  [org.slf4j/log4j-over-slf4j "1.7.7"]]
 
   :plugins [[lein-bikeshed "0.1.7"]
-            [lein-vanity "0.2.0"]]
+            [lein-vanity "0.2.0"]
+            [lein-cloverage "1.0.2"]]
 
   :min-lein-version "2.0.0"
   :resource-paths ["config", "resources"]

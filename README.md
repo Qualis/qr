@@ -17,6 +17,8 @@ Run:
 
 * tests with `lein test`
 * code quality tests with `lein bikeshed`
+* code coverage report generation with `lein cloverage`
+  * report written to: target/coverage/index.html
 * lines of code analysis with `lein vanity`
 
 ## Configuration
