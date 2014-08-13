@@ -2,19 +2,24 @@
 
 URL shortening and QR code service for resource links
 
-## Getting Started
+## Starting the application
 
-1. Start the application: `lein run-dev` \*
-2. Go to [localhost:8080](http://localhost:8080/)
-3. Run your app's tests with `lein test`. Read the tests at test/qr/service_test.clj.
+Start the application:
 
-\* `lein run-dev` automatically detects code changes. Alternatively, you can run in production mode
-with `lein run`.
+1. Developer mode (automatically detects code changes): `lein run-dev`
+2. Production mode: `lein run`
+
+Navigate to [localhost:8080](http://localhost:8080/)
+
+## Testing the application
+
+* Run tests with `lein test`
+* Run code quality tests with `lein bikeshed`
+* Report on lines of code with `lein vanity`
 
 ## Configuration
 
-To configure logging see config/logback.xml. By default, the app logs to stdout and logs/.
-To learn more about configuring Logback, read its [documentation](http://logback.qos.ch/documentation.html).
+To configure logging: config/logback.xml
 
 ## Links
-* [Other examples](https://github.com/pedestal/samples)
+* [Developer](http://www.qual.is)
