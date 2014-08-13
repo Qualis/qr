@@ -6,12 +6,14 @@
               [ring.util.response :as ring-resp]))
 
 (defn about-page
+  "Serve about page"
   [request]
   (ring-resp/response (format "Clojure %s - served from %s"
                               (clojure-version)
                               (route/url-for ::about-page))))
 
 (defn home-page
+  "Serve home page"
   [request]
   (ring-resp/response "Hello World!"))
 
@@ -23,7 +25,7 @@
 
 ;; Consumed by qr.server/create-server
 ;; See bootstrap/default-interceptors for additional options you can configure
-(def service {:env :prod
+(def service "Service definition" {:env :prod
               ;; You can bring your own non-default interceptors. Make
               ;; sure you include routing and set it up right for
               ;; dev-mode. If you do, many other keys for configuring
@@ -47,4 +49,3 @@
               ;;::bootstrap/host "localhost"
               ::bootstrap/type :jetty
               ::bootstrap/port 8080})
-

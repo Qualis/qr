@@ -19,7 +19,8 @@
               ;;  we can use this to set the routes to be reloadable
               ::server/routes #(deref #'service/routes)
               ;; all origins are allowed in dev mode
-              ::server/allowed-origins {:creds true :allowed-origins (constantly true)}})
+              ::server/allowed-origins {:creds true
+				  :allowed-origins (constantly true)}})
       ;; Wire up interceptor chains
       (server/default-interceptors)
       (server/dev-interceptors))
@@ -30,4 +31,3 @@
   [& args]
   (println "\nCreating your server...")
   (server/start runnable-service))
-
