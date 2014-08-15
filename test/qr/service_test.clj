@@ -17,7 +17,8 @@
         "Strict-Transport-Security" "max-age=31536000; includeSubdomains"
         "X-Frame-Options" "DENY"
         "X-Content-Type-Options" "nosniff"
-        "X-XSS-Protection" "1; mode=block"})))
+        "X-XSS-Protection" "1; mode=block"
+        "Link" "</123>; rel=\"self\"; type=\"text/plain\"; title=\"GET URL\"; method=\"GET\""})))
 
 (deftest top-level-test
   (is (=

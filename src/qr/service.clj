@@ -6,6 +6,11 @@
               [ring.util.response :as ring-resp]
               [clojure.data.json :as json]))
 
+(defn get-link-header
+  "get link header string method"
+  [id type title method]
+  (format "</%s>; rel=\"self\"; type=\"%s\"; title=\"%s\"; method=\"%s\"" id type title method))
+
 (defn about-page
   "Serve about page"
   [request]
@@ -16,13 +21,14 @@
 (defn top-level
   "Serve top-level request"
   [request]
-  (ring-resp/response "Hello World!"))
+  (ring-resp/header (ring-resp/response "Hello World!")
+    "Link" (get-link-header "123" "text/plain" "GET URL" "GET")))
 
 (defn top-level-post
   "Satisfy top-level post request"
   [request]
   (ring-resp/header (ring-resp/response "http://www.google.com.au/")
-    "Link" "</123>; rel=\"self\"; type=\"image/png\"; title=\"GET PNG\"; method=\"GET\""))
+    "Link" (get-link-header "123" "image/png" "GET PNG" "GET")))
 
 (defroutes routes
   [[["/" {:get top-level :post top-level-post}
