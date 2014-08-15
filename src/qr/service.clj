@@ -20,7 +20,7 @@
 
 (defn top-level-post
   "Satisfy top-level post request"
-  [request]; )
+  [request]
   (ring-resp/header (ring-resp/response "http://www.google.com.au/")
     "Link" "</123>; rel=\"self\"; type=\"image/png\"; title=\"GET PNG\"; method=\"GET\""))
 
