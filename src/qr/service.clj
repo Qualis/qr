@@ -3,7 +3,8 @@
               [io.pedestal.http.route :as route]
               [io.pedestal.http.body-params :as body-params]
               [io.pedestal.http.route.definition :refer [defroutes]]
-              [ring.util.response :as ring-resp]))
+              [ring.util.response :as ring-resp]
+              [clojure.data.json :as json]))
 
 (defn about-page
   "Serve about page"
@@ -12,13 +13,19 @@
                               (clojure-version)
                               (route/url-for ::about-page))))
 
-(defn home-page
-  "Serve home page"
+(defn top-level
+  "Serve top-level request"
   [request]
   (ring-resp/response "Hello World!"))
 
+(defn top-level-post
+  "Satisfy top-level post request"
+  [request]; )
+  (ring-resp/header (ring-resp/response "http://www.google.com.au/")
+    "Link" "</123>; rel=\"self\"; type=\"image/png\"; title=\"GET PNG\"; method=\"GET\""))
+
 (defroutes routes
-  [[["/" {:get home-page}
+  [[["/" {:get top-level :post top-level-post}
      ;; Set default interceptors for /about and any other paths under /
      ^:interceptors [(body-params/body-params) bootstrap/html-body]
      ["/about" {:get about-page}]]]])
