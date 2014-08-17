@@ -4,12 +4,8 @@
               [io.pedestal.http.body-params :as body-params]
               [io.pedestal.http.route.definition :refer [defroutes]]
               [ring.util.response :as ring-resp]
-              [clojure.data.json :as json]))
-
-(defn get-link-header
-  "get link header string method"
-  [id type title method]
-  (format "</%s>; rel=\"self\"; type=\"%s\"; title=\"%s\"; method=\"%s\"" id type title method))
+              [clojure.data.json :as json]
+              [qr.http.header :as qualis-header]))
 
 (defn about-page
   "Serve about page"
@@ -21,14 +17,20 @@
 (defn top-level
   "Serve top-level request"
   [request]
-  (ring-resp/header (ring-resp/response "Hello World!")
-    "Link" (get-link-header "123" "text/plain" "GET URL" "GET")))
+  (let [[linkHeader LinkHeaderValue]
+      (qualis-header/get-link-header "123" "text/plain" "GET URL" "GET")]
+    (ring-resp/header
+      (ring-resp/response "Hello World!")
+        linkHeader LinkHeaderValue)))
 
 (defn top-level-post
   "Satisfy top-level post request"
   [request]
-  (ring-resp/header (ring-resp/response "http://www.google.com.au/")
-    "Link" (get-link-header "123" "image/png" "GET PNG" "GET")))
+  (let [[linkHeader LinkHeaderValue]
+      (qualis-header/get-link-header "123" "image/png" "GET PNG" "GET")]
+    (ring-resp/header
+      (ring-resp/response "http://www.google.com.au/")
+        linkHeader LinkHeaderValue)))
 
 (defroutes routes
   [[["/" {:get top-level :post top-level-post}
