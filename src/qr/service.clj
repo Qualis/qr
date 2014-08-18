@@ -20,7 +20,8 @@
   (let [[linkHeader LinkHeaderValue]
       (qualis-header/get-link-header "123" "text/plain" "GET URL" "GET")]
     (ring-resp/header
-      (ring-resp/response "Hello World!")
+      (ring-resp/response (if (= "image/png" (get (:headers request) "accept"))
+          "the png" "the url"))
         linkHeader LinkHeaderValue)))
 
 (defn top-level-post
@@ -29,7 +30,7 @@
   (let [[linkHeader LinkHeaderValue]
       (qualis-header/get-link-header "123" "image/png" "GET PNG" "GET")]
     (ring-resp/header
-      (ring-resp/response "http://www.google.com.au/")
+      (ring-resp/response "")
         linkHeader LinkHeaderValue)))
 
 (defroutes routes
