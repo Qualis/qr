@@ -26,7 +26,7 @@
        "the url"))
   (is (=
        (:headers (response-for service :get "/"))
-       (conj DEFAULT_HEADER GET_URL_LINK_HEADER))))
+       (conj DEFAULT_HEADER GET_PNG_LINK_HEADER))))
 
 (deftest top-level-get-accept-text-plain-test
   (is (=

@@ -17,53 +17,30 @@
 (defn top-level
   "Serve top-level request"
   [request]
-  (let [[linkHeader linkHeaderValue]
-    (if (= "text/plain" (get (:headers request) "accept"))
-      (qualis-header/get-png-link-header "123")
-      (qualis-header/get-url-link-header "123"))]
+  (let [[linkHeader linkHeaderValue responseValue]
+    (if (not= "image/png" (get (:headers request) "accept"))
+      (conj (qualis-header/get-png-link-header "123") "the url")
+      (conj (qualis-header/get-url-link-header "123") "the png"))]
     (ring-resp/header
-      (ring-resp/response (if (= "image/png" (get (:headers request) "accept"))
-          "the png" "the url"))
+      (ring-resp/response responseValue)
         linkHeader linkHeaderValue)))
 
 (defn top-level-post
   "Satisfy top-level post request"
   [request]
-  (let [[linkHeader linkHeaderValue]
-      (qualis-header/get-png-link-header "123")]
+  (let [[linkHeader linkHeaderValue responseValue]
+      (conj (qualis-header/get-png-link-header "123") "")]
     (ring-resp/header
-      (ring-resp/response "")
+      (ring-resp/response responseValue)
         linkHeader linkHeaderValue)))
 
 (defroutes routes
   [[["/" {:get top-level :post top-level-post}
-     ;; Set default interceptors for /about and any other paths under /
      ^:interceptors [(body-params/body-params) bootstrap/html-body]
      ["/about" {:get about-page}]]]])
 
-;; Consumed by qr.server/create-server
-;; See bootstrap/default-interceptors for additional options you can configure
 (def service "Service definition" {:env :prod
-              ;; You can bring your own non-default interceptors. Make
-              ;; sure you include routing and set it up right for
-              ;; dev-mode. If you do, many other keys for configuring
-              ;; default interceptors will be ignored.
-              ;; :bootstrap/interceptors []
               ::bootstrap/routes routes
-
-              ;; Uncomment next line to enable CORS support, add
-              ;; string(s) specifying scheme, host and port for
-              ;; allowed source(s):
-              ;;
-              ;; "http://localhost:8080"
-              ;;
-              ;;::bootstrap/allowed-origins ["scheme://host:port"]
-
-              ;; Root for resource interceptor that is available by default.
               ::bootstrap/resource-path "/public"
-
-              ;; Either :jetty or :tomcat (see comments in project.clj
-              ;; to enable Tomcat)
-              ;;::bootstrap/host "localhost"
               ::bootstrap/type :jetty
               ::bootstrap/port 8080})
