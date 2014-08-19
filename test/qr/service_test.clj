@@ -33,15 +33,15 @@
        (:body (response-for service :get "/" :headers {"accept" "text/plain"}))
        "the url"))
   (is (=
-       (:headers (response-for service :get "/"))
-       (conj DEFAULT_HEADER GET_URL_LINK_HEADER))))
+       (:headers (response-for service :get "/" :headers {"accept" "text/plain"}))
+       (conj DEFAULT_HEADER GET_PNG_LINK_HEADER))))
 
 (deftest top-level-get-accept-image-png-test
   (is (=
        (:body (response-for service :get "/" :headers {"accept" "image/png"}))
        "the png"))
   (is (=
-       (:headers (response-for service :get "/"))
+       (:headers (response-for service :get "/" :headers {"accept" "image/png"}))
        (conj DEFAULT_HEADER GET_URL_LINK_HEADER))))
 
 (deftest top-level-post-test

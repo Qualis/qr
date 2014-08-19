@@ -17,21 +17,23 @@
 (defn top-level
   "Serve top-level request"
   [request]
-  (let [[linkHeader LinkHeaderValue]
-      (qualis-header/get-link-header "123" "text/plain" "GET URL" "GET")]
+  (let [[linkHeader linkHeaderValue]
+    (if (= "text/plain" (get (:headers request) "accept"))
+      (qualis-header/get-png-link-header "123")
+      (qualis-header/get-url-link-header "123"))]
     (ring-resp/header
       (ring-resp/response (if (= "image/png" (get (:headers request) "accept"))
           "the png" "the url"))
-        linkHeader LinkHeaderValue)))
+        linkHeader linkHeaderValue)))
 
 (defn top-level-post
   "Satisfy top-level post request"
   [request]
-  (let [[linkHeader LinkHeaderValue]
-      (qualis-header/get-link-header "123" "image/png" "GET PNG" "GET")]
+  (let [[linkHeader linkHeaderValue]
+      (qualis-header/get-png-link-header "123")]
     (ring-resp/header
       (ring-resp/response "")
-        linkHeader LinkHeaderValue)))
+        linkHeader linkHeaderValue)))
 
 (defroutes routes
   [[["/" {:get top-level :post top-level-post}
