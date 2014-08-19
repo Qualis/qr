@@ -6,8 +6,6 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [io.pedestal/pedestal.service "0.3.0"]
 
-                 ;; Remove this line and uncomment the next line to
-                 ;; use Tomcat instead of Jetty:
                  [io.pedestal/pedestal.jetty "0.3.0"]
                  ;; [io.pedestal/pedestal.tomcat "0.3.0"]
 

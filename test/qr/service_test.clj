@@ -15,10 +15,12 @@
   "X-XSS-Protection" "1; mode=block"})
 
 (def ^:const GET_URL_LINK_HEADER {
-  "Link" "</123>; rel=\"self\"; type=\"text/plain\"; title=\"GET URL\"; method=\"GET\""})
+  "Link"
+  "</123>;rel=\"self\";type=\"text/plain\";title=\"GET URL\";method=\"GET\""})
 
 (def ^:const GET_PNG_LINK_HEADER {
-  "Link" "</123>; rel=\"self\"; type=\"image/png\"; title=\"GET PNG\"; method=\"GET\""})
+  "Link"
+  "</123>;rel=\"self\";type=\"image/png\";title=\"GET PNG\";method=\"GET\""})
 
 (deftest top-level-get-test
   (is (=
@@ -30,18 +32,22 @@
 
 (deftest top-level-get-accept-text-plain-test
   (is (=
-       (:body (response-for service :get "/" :headers {"accept" "text/plain"}))
+       (:body (response-for service :get "/"
+                :headers {"accept" "text/plain"}))
        "the url"))
   (is (=
-       (:headers (response-for service :get "/" :headers {"accept" "text/plain"}))
+       (:headers (response-for service :get "/"
+                   :headers {"accept" "text/plain"}))
        (conj DEFAULT_HEADER GET_PNG_LINK_HEADER))))
 
 (deftest top-level-get-accept-image-png-test
   (is (=
-       (:body (response-for service :get "/" :headers {"accept" "image/png"}))
+       (:body (response-for service :get "/"
+                :headers {"accept" "image/png"}))
        "the png"))
   (is (=
-       (:headers (response-for service :get "/" :headers {"accept" "image/png"}))
+       (:headers (response-for service :get "/"
+                   :headers {"accept" "image/png"}))
        (conj DEFAULT_HEADER GET_URL_LINK_HEADER))))
 
 (deftest top-level-post-test
