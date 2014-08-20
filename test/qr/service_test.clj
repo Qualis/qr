@@ -25,7 +25,8 @@
 (defn set-id-from-link-header
   "gets the id from a response link header and sets last-generated-id"
   [response]
-  (def last-generated-id (second (re-find #"<\/(.*?)>" (get (:headers response) "Link")))))
+  (def last-generated-id (second (re-find #"<\/(.*?)>"
+    (get (:headers response) "Link")))))
 
 (defn header-matcher
   "Compare 2 header map with first being regex"
@@ -40,37 +41,34 @@
     (is (= (:body response) ""))
     (header-matcher
       (conj DEFAULT_HEADER GET_PNG_LINK_HEADER)
-      (:headers (response-for service :post "/"
-        :params {:url "http://www.google.com.au/"})))))
+      (:headers response))))
 
 (deftest top-level-get-test
-  (is (=
-    (:body (response-for service :get "/")) "the url"))
-  (header-matcher
-    (conj DEFAULT_HEADER GET_PNG_LINK_HEADER)
-    (:headers (response-for service :get "/"))))
+  (let [response (response-for service :get "/")]
+    (is (=(:body response) "the url"))
+    (header-matcher
+      (conj DEFAULT_HEADER GET_PNG_LINK_HEADER)
+      (:headers response))))
 
 (deftest top-level-get-accept-text-plain-test
-  (is (=
-    (:body (response-for service :get "/"
-      :headers {"accept" "text/plain"})) "the url"))
-  (header-matcher
-    (conj DEFAULT_HEADER GET_PNG_LINK_HEADER)
-    (:headers (response-for service :get "/"
-      :headers {"accept" "text/plain"}))))
+  (let [response (response-for service :get "/"
+      :headers {"accept" "text/plain"})]
+    (is (=(:body response) "the url"))
+    (header-matcher
+      (conj DEFAULT_HEADER GET_PNG_LINK_HEADER)
+      (:headers response))))
 
 (deftest top-level-get-accept-image-png-test
-  (is (=
-    (:body (response-for service :get "/"
-      :headers {"accept" "image/png"})) "the png"))
-  (header-matcher
-    (conj DEFAULT_HEADER GET_URL_LINK_HEADER)
-    (:headers (response-for service :get "/"
-      :headers {"accept" "image/png"}))))
+  (let [response (response-for service :get "/"
+      :headers {"accept" "image/png"})]
+    (is (=(:body response) "the png"))
+    (header-matcher
+      (conj DEFAULT_HEADER GET_URL_LINK_HEADER)
+      (:headers response))))
 
 (deftest about-page-test
-  (is (.contains
-    (:body (response-for service :get "/about")) "Clojure 1.6"))
-  (header-matcher
-    DEFAULT_HEADER
-    (:headers (response-for service :get "/about"))))
+  (let [response (response-for service :get "/about")]
+    (is (.contains (:body response) "Clojure 1.6"))
+    (header-matcher
+      DEFAULT_HEADER
+      (:headers response))))
