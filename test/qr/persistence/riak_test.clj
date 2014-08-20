@@ -7,6 +7,12 @@
   [input]
   (java.util.UUID/fromString input))
 
-(deftest save-test
-  (let [result (persistence/save "http://www.google.com.au")]
+(deftest create-record-test
+  (let [result (persistence/create-record "http://www.google.com.au")]
     (is (instance? java.util.UUID (get-uuid result)))))
+
+(deftest read-record-test
+  (let [result (persistence/read-record
+      (persistence/create-record "http://www.google.com.au"))]
+    (is (= (persistence/get-value result)
+      {:destination "http://www.google.com.au"}))))
