@@ -22,11 +22,26 @@
   "Link"
   "</.*>;rel=\"self\";type=\"image/png\";title=\"GET PNG\";method=\"GET\""})
 
+(defn set-id-from-link-header
+  "gets the id from a response link header and sets last-generated-id"
+  [response]
+  (def last-generated-id (second (re-find #"<\/(.*?)>" (get (:headers response) "Link")))))
+
 (defn header-matcher
   "Compare 2 header map with first being regex"
   [regex actual]
   (doseq [[headerName headerValue] regex]
     (is (re-matches (re-pattern headerValue) (get actual headerName)))))
+
+(deftest top-level-post-test
+  (let [response (response-for service :post "/"
+      :params {:url "http://www.google.com.au/"})]
+    (set-id-from-link-header response)
+    (is (= (:body response) ""))
+    (header-matcher
+      (conj DEFAULT_HEADER GET_PNG_LINK_HEADER)
+      (:headers (response-for service :post "/"
+        :params {:url "http://www.google.com.au/"})))))
 
 (deftest top-level-get-test
   (is (=
@@ -52,15 +67,6 @@
     (conj DEFAULT_HEADER GET_URL_LINK_HEADER)
     (:headers (response-for service :get "/"
       :headers {"accept" "image/png"}))))
-
-(deftest top-level-post-test
-  (is (=
-    (:body (response-for service :post "/"
-      :params {:url "http://www.google.com.au/"})) ""))
-  (header-matcher
-    (conj DEFAULT_HEADER GET_PNG_LINK_HEADER)
-    (:headers (response-for service :post "/"
-      :params {:url "http://www.google.com.au/"}))))
 
 (deftest about-page-test
   (is (.contains
