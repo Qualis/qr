@@ -22,5 +22,4 @@
   "read record"
   [id]
   (let [conn (wc/connect) bucket "resource"]
-    (wb/update conn bucket)
     (kv/fetch-one conn bucket id)))

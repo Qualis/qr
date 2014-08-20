@@ -5,7 +5,8 @@
               [io.pedestal.http.route.definition :refer [defroutes]]
               [ring.util.response :as ring-resp]
               [clojure.data.json :as json]
-              [qr.http.header :as qualis-header]))
+              [qr.http.header :as qualis-header]
+              [qr.persistence.riak :as persistence]))
 
 (defn about-page
   "Serve about page"
@@ -29,7 +30,8 @@
   "Satisfy top-level post request"
   [request]
   (let [[linkHeader linkHeaderValue responseValue]
-      (conj (qualis-header/get-png-link-header "123") "")]
+      (conj (qualis-header/get-png-link-header
+        (persistence/create-record (get (:params request) :url))) "")]
     (ring-resp/header
       (ring-resp/response responseValue)
         linkHeader linkHeaderValue)))
