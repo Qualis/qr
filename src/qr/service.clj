@@ -18,13 +18,14 @@
 (defn top-level
   "Serve top-level request"
   [request]
-  (let [[linkHeader linkHeaderValue responseValue]
-    (if (not= "image/png" (get (:headers request) "accept"))
-      (conj (qualis-header/get-png-link-header "123") "the url")
-      (conj (qualis-header/get-url-link-header "123") "the png"))]
-    (ring-resp/header
-      (ring-resp/response responseValue)
-        linkHeader linkHeaderValue)))
+  (let [id (get-in request [:path-params :id])]
+    (let [[linkHeader linkHeaderValue responseValue]
+      (if (not= "image/png" (get (:headers request) "accept"))
+        (conj (qualis-header/get-png-link-header id) "the url")
+        (conj (qualis-header/get-url-link-header id) "the png"))]
+      (ring-resp/header
+        (ring-resp/response responseValue)
+          linkHeader linkHeaderValue))))
 
 (defn top-level-post
   "Satisfy top-level post request"
@@ -37,9 +38,10 @@
         linkHeader linkHeaderValue)))
 
 (defroutes routes
-  [[["/" {:get top-level :post top-level-post}
+  [[["/" {:post top-level-post}
      ^:interceptors [(body-params/body-params) bootstrap/html-body]
-     ["/about" {:get about-page}]]]])
+     ["/about" {:get about-page}]
+     ["/:id" {:get top-level}]]]])
 
 (def service "Service definition" {:env :prod
               ::bootstrap/routes routes
