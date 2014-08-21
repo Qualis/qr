@@ -16,3 +16,9 @@
   "get standard URL link header string"
   [id]
   (get-link-header id "text/plain" "GET URL" "GET"))
+
+(defn get-id-from-link-header
+  "gets the id from a response link header and sets last-generated-id"
+  [response]
+  (second (re-find #"<\/(.*?)>"
+    (get (:headers response) "Link"))))

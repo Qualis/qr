@@ -2,7 +2,8 @@
   (:require [clojure.test :refer :all]
             [io.pedestal.test :refer :all]
             [io.pedestal.http :as bootstrap]
-            [qr.service :as service]))
+            [qr.service :as service]
+            [qr.http.header :as header]))
 
 (def service
   (::bootstrap/service-fn (bootstrap/create-servlet service/service)))
@@ -22,16 +23,10 @@
   "Link"
   "</.{36}>;rel=\"self\";type=\"image/png\";title=\"GET PNG\";method=\"GET\""})
 
-(defn get-id-from-link-header
-  "gets the id from a response link header and sets last-generated-id"
-  [response]
-  (second (re-find #"<\/(.*?)>"
-    (get (:headers response) "Link"))))
-
 (defn set-id-from-link-header
   "gets the id from a response link header and sets last-generated-id"
   [response]
-  (def last-generated-id (get-id-from-link-header response)))
+  (def last-generated-id (header/get-id-from-link-header response)))
 
 (defn header-matcher
   "Compare 2 header map with first being regex"
@@ -66,7 +61,7 @@
   (let [response (response-for service :post "/"
       :body "{\"url\":\"http://www.google.com.au/\"}"
       :headers {"Content-Type" "application/json"})]
-    (get-id-from-link-header response)
+    (header/get-id-from-link-header response)
     (is (= (:body response) ""))
     (header-matcher
       (conj DEFAULT_HEADER GET_PNG_LINK_HEADER)
