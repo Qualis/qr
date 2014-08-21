@@ -12,8 +12,8 @@
   "Serve about page"
   [request]
   (ring-resp/response (format "Clojure %s - served from %s"
-                              (clojure-version)
-                              (route/url-for ::about-page))))
+                        (clojure-version)
+                        (route/url-for ::about-page))))
 
 (defn top-level
   "Serve top-level request"
@@ -21,7 +21,8 @@
   (let [id (get-in request [:path-params :id])]
     (let [[linkHeader linkHeaderValue responseValue]
       (if (not= "image/png" (get (:headers request) "accept"))
-        (conj (qualis-header/get-png-link-header id) "the url")
+        (conj (qualis-header/get-png-link-header id)
+          (persistence/get-destination-by-id id))
         (conj (qualis-header/get-url-link-header id) "the png"))]
       (ring-resp/header
         (ring-resp/response responseValue)
@@ -32,7 +33,7 @@
   [request]
   (let [[linkHeader linkHeaderValue responseValue]
       (conj (qualis-header/get-png-link-header
-        (persistence/create-record (get (:params request) :url))) "")]
+        (persistence/create-record (get (:json-params request) :url))) "")]
     (ring-resp/header
       (ring-resp/response responseValue)
         linkHeader linkHeaderValue)))

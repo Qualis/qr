@@ -44,8 +44,9 @@
   []
   (println "setup")
   (let [response (response-for service :post "/"
-        :params {:url "http://www.qual.is/"})]
-      (set-id-from-link-header response)))
+      :body "{\"url\":\"http://www.qual.is/\"}"
+      :headers {"Content-Type" "application/json"})]
+    (set-id-from-link-header response)))
 
 (defn teardown
   "remove fixture data"
@@ -63,7 +64,8 @@
 
 (deftest top-level-post-test
   (let [response (response-for service :post "/"
-      :params {:url "http://www.google.com.au/"})]
+      :body "{\"url\":\"http://www.google.com.au/\"}"
+      :headers {"Content-Type" "application/json"})]
     (get-id-from-link-header response)
     (is (= (:body response) ""))
     (header-matcher
@@ -72,7 +74,7 @@
 
 (deftest top-level-get-test
   (let [response (response-for service :get (str "/" last-generated-id))]
-    (is (=(:body response) "the url"))
+    (is (=(:body response) "http://www.qual.is/"))
     (header-matcher
       (conj DEFAULT_HEADER GET_PNG_LINK_HEADER)
       (:headers response))))
@@ -80,7 +82,7 @@
 (deftest top-level-get-accept-text-plain-test
   (let [response (response-for service :get (str "/" last-generated-id)
       :headers {"accept" "text/plain"})]
-    (is (=(:body response) "the url"))
+    (is (=(:body response) "http://www.qual.is/"))
     (header-matcher
       (conj DEFAULT_HEADER GET_PNG_LINK_HEADER)
       (:headers response))))
