@@ -28,11 +28,11 @@
   [response]
   (def last-generated-id (header/get-id-from-link-header response)))
 
-(defn header-matcher
-  "Compare 2 header map with first being regex"
-  [regex actual]
+(defn regex-header-matcher
+  "Compare 2 header maps (first having regex value)"
+  [regex compareTo]
   (doseq [[headerName headerValue] regex]
-    (is (re-matches (re-pattern headerValue) (get actual headerName)))))
+    (is (re-matches (re-pattern headerValue) (get compareTo headerName)))))
 
 (defn setup
   "add fixture data"
@@ -49,10 +49,10 @@
   (println "teardown"))
 
 (defn fixture
-  [f]
+  [test-function]
   (println "wrapping setup")
   (setup)
-  (f)
+  (test-function)
   (teardown))
 
 (use-fixtures :once fixture)
@@ -63,14 +63,14 @@
       :headers {"Content-Type" "application/json"})]
     (header/get-id-from-link-header response)
     (is (= (:body response) ""))
-    (header-matcher
+    (regex-header-matcher
       (conj DEFAULT_HEADER GET_PNG_LINK_HEADER)
       (:headers response))))
 
 (deftest top-level-get-test
   (let [response (response-for service :get (str "/" last-generated-id))]
     (is (=(:body response) "http://www.qual.is/"))
-    (header-matcher
+    (regex-header-matcher
       (conj DEFAULT_HEADER GET_PNG_LINK_HEADER)
       (:headers response))))
 
@@ -78,7 +78,7 @@
   (let [response (response-for service :get (str "/" last-generated-id)
       :headers {"accept" "text/plain"})]
     (is (=(:body response) "http://www.qual.is/"))
-    (header-matcher
+    (regex-header-matcher
       (conj DEFAULT_HEADER GET_PNG_LINK_HEADER)
       (:headers response))))
 
@@ -86,13 +86,13 @@
   (let [response (response-for service :get (str "/" last-generated-id)
       :headers {"accept" "image/png"})]
     (is (=(:body response) "the png"))
-    (header-matcher
+    (regex-header-matcher
       (conj DEFAULT_HEADER GET_URL_LINK_HEADER)
       (:headers response))))
 
 (deftest about-page-test
   (let [response (response-for service :get "/about")]
     (is (.contains (:body response) "Clojure 1.6"))
-    (header-matcher
+    (regex-header-matcher
       DEFAULT_HEADER
       (:headers response))))

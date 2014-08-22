@@ -10,13 +10,13 @@
   [& args]
   (println "\nCreating your [DEV] server...")
   (-> runnable-service
-      (merge {:env :dev
-              ::server/join? false
-              ::server/routes #(deref #'service/routes)
-              ::server/allowed-origins {:creds true
-				  :allowed-origins (constantly true)}})
-      (server/default-interceptors)
-      (server/dev-interceptors))
+    (merge {:env :dev
+      ::server/join? false
+      ::server/routes #(deref #'service/routes)
+      ::server/allowed-origins {:creds true
+        :allowed-origins (constantly true)}})
+    (server/default-interceptors)
+    (server/dev-interceptors))
   (server/start runnable-service))
 
 (defn -main
