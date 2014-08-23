@@ -19,6 +19,12 @@
   (let [conn (wc/connect) bucket "resource"]
     (kv/fetch-one conn bucket id)))
 
+(defn delete-record
+  "delete record"
+  [id]
+  (let [conn (wc/connect) bucket "resource"]
+    (kv/delete conn bucket id)))
+
 (defn get-value
   "get record value"
   [record]

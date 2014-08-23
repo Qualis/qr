@@ -4,7 +4,8 @@
             [io.pedestal.http :as bootstrap]
             [qr.service :as service]
             [clojure.data.json :as json]
-            [qr.http.header :as header]))
+            [qr.http.header :as header]
+            [qr.persistence.riak :as persistence]))
 
 (def service
   (::bootstrap/service-fn (bootstrap/create-servlet service/service)))
@@ -33,15 +34,22 @@
   (conj TEXT_HTML_RESPONSE_HEADER GET_PNG_LINK_HEADER))
 
 (def ^:const GET_METHOD_URL "http://www.qual.is/")
-(def ^:const GET_METHOD_JSON {:url GET_METHOD_URL})
 (def ^:const POST_METHOD_URL "http://www.google.com.au/")
 (def ^:const POST_METHOD_JSON {:url POST_METHOD_URL})
 (def ^:const ROOT_URL_PATH "/")
 
-(defn set-id-from-link-header
-  "gets the id from a response link header and sets last-generated-id"
-  [response]
-  (def last-generated-id (header/get-id-from-link-header response)))
+(defn setup
+  "add fixture data"
+  []
+  (def generated-id (persistence/create-record GET_METHOD_URL)))
+
+(defn fixture
+  [test-function]
+  (setup)
+  (test-function)
+  (persistence/delete-record generated-id))
+
+(use-fixtures :once fixture)
 
 (defn regex-header-matcher
   "Compare 2 header maps (first having regex value)"
@@ -52,33 +60,13 @@
 (defn get-url
   "get url path for last generated id"
   []
-  (str ROOT_URL_PATH last-generated-id))
-
-(defn setup
-  "add fixture data"
-  []
-  (let [response (response-for service :post ROOT_URL_PATH
-      :body (json/write-str GET_METHOD_JSON)
-      :headers {"Content-Type" "application/json"})]
-    (set-id-from-link-header response)))
-
-(defn teardown
-  "remove fixture data"
-  [])
-
-(defn fixture
-  [test-function]
-  (setup)
-  (test-function)
-  (teardown))
-
-(use-fixtures :once fixture)
+  (str ROOT_URL_PATH generated-id))
 
 (deftest top-level-post-test
   (let [response (response-for service :post ROOT_URL_PATH
       :body (json/write-str POST_METHOD_JSON)
       :headers {"Content-Type" "application/json"})]
-    (header/get-id-from-link-header response)
+    (persistence/delete-record (header/get-id-from-link-header response))
     (is (= (:body response) ""))
     (regex-header-matcher POST_RESPONSE_HEADER (:headers response))))
 
