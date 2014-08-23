@@ -10,7 +10,6 @@
   (::bootstrap/service-fn (bootstrap/create-servlet service/service)))
 
 (def ^:const DEFAULT_HEADER {
-  "Content-Type" "text/html;charset=UTF-8"
   "Strict-Transport-Security" "max-age=31536000; includeSubdomains"
   "X-Frame-Options" "DENY"
   "X-Content-Type-Options" "nosniff"
@@ -24,12 +23,19 @@
   "Link"
   "</.{36}>;rel=\"self\";type=\"image/png\";title=\"GET PNG\";method=\"GET\""})
 
+(def ^:const TEXT_PLAIN_RESPONSE_HEADER
+  (conj header/TEXT_PLAIN_CONTENT_TYPE DEFAULT_HEADER GET_PNG_LINK_HEADER))
+(def ^:const IMAGE_PNG_RESPONSE_HEADER
+  (conj header/IMAGE_PNG_CONTENT_TYPE DEFAULT_HEADER GET_URL_LINK_HEADER))
+(def ^:const TEXT_HTML_RESPONSE_HEADER
+  (conj header/TEXT_HTML_CONTENT_TYPE DEFAULT_HEADER))
+(def ^:const POST_RESPONSE_HEADER
+  (conj TEXT_HTML_RESPONSE_HEADER GET_PNG_LINK_HEADER))
+
 (def ^:const GET_METHOD_URL "http://www.qual.is/")
 (def ^:const GET_METHOD_JSON {:url GET_METHOD_URL})
 (def ^:const POST_METHOD_URL "http://www.google.com.au/")
 (def ^:const POST_METHOD_JSON {:url POST_METHOD_URL})
-(def ^:const ACCEPT_IMAGE_PNG_HEADER {"Accept" "image/png"})
-(def ^:const ACCEPT_PLAIN_TEXT_HEADER {"Accept" "text/plain"})
 (def ^:const ROOT_URL_PATH "/")
 
 (defn set-id-from-link-header
@@ -51,7 +57,6 @@
 (defn setup
   "add fixture data"
   []
-  (println "setup")
   (let [response (response-for service :post ROOT_URL_PATH
       :body (json/write-str GET_METHOD_JSON)
       :headers {"Content-Type" "application/json"})]
@@ -59,12 +64,10 @@
 
 (defn teardown
   "remove fixture data"
-  []
-  (println "teardown"))
+  [])
 
 (defn fixture
   [test-function]
-  (println "wrapping setup")
   (setup)
   (test-function)
   (teardown))
@@ -77,31 +80,26 @@
       :headers {"Content-Type" "application/json"})]
     (header/get-id-from-link-header response)
     (is (= (:body response) ""))
-    (regex-header-matcher
-      (conj DEFAULT_HEADER GET_PNG_LINK_HEADER) (:headers response))))
+    (regex-header-matcher POST_RESPONSE_HEADER (:headers response))))
 
 (deftest top-level-get-test
   (let [response (response-for service :get (get-url))]
     (is (=(:body response) GET_METHOD_URL))
-    (regex-header-matcher
-      (conj DEFAULT_HEADER GET_PNG_LINK_HEADER) (:headers response))))
+    (regex-header-matcher TEXT_PLAIN_RESPONSE_HEADER (:headers response))))
 
 (deftest top-level-get-accept-text-plain-test
   (let [response (response-for service :get (get-url)
-      :headers ACCEPT_PLAIN_TEXT_HEADER)]
+      :headers header/ACCEPT_PLAIN_TEXT)]
     (is (=(:body response) GET_METHOD_URL))
-    (regex-header-matcher
-      (conj DEFAULT_HEADER GET_PNG_LINK_HEADER) (:headers response))))
+    (regex-header-matcher TEXT_PLAIN_RESPONSE_HEADER (:headers response))))
 
 (deftest top-level-get-accept-image-png-test
   (let [response (response-for service :get (get-url)
-      :headers ACCEPT_IMAGE_PNG_HEADER)]
+      :headers header/ACCEPT_IMAGE_PNG)]
     (is (=(:body response) "the png"))
-    (regex-header-matcher
-      (conj DEFAULT_HEADER GET_URL_LINK_HEADER) (:headers response))))
+    (regex-header-matcher IMAGE_PNG_RESPONSE_HEADER (:headers response))))
 
 (deftest about-page-test
   (let [response (response-for service :get (str ROOT_URL_PATH "about"))]
     (is (.contains (:body response) "Clojure 1.6"))
-    (regex-header-matcher
-      DEFAULT_HEADER (:headers response))))
+    (regex-header-matcher TEXT_HTML_RESPONSE_HEADER (:headers response))))

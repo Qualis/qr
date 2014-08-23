@@ -8,6 +8,31 @@
               [qr.http.header :as header]
               [qr.persistence.riak :as persistence]))
 
+(defn get-response
+  "get response"
+  [linkHeader linkHeaderValue contentTypeHeader contentTypeHeaderValue body]
+  (ring-resp/header (ring-resp/header
+    (ring-resp/response body)
+      linkHeader linkHeaderValue) contentTypeHeader contentTypeHeaderValue))
+
+(defn get-plain-text-response
+  "get plain text response"
+  [id]
+  (let [[linkHeader linkHeaderValue] (header/get-png-link-header id)]
+    (get-response
+      linkHeader linkHeaderValue
+      "Content-Type" "text/plain"
+      (persistence/get-destination-by-id id))))
+
+(defn get-image-png-response
+  "get image png response"
+  [id]
+  (let [[linkHeader linkHeaderValue] (header/get-url-link-header id)]
+    (get-response
+      linkHeader linkHeaderValue
+      "Content-Type" "image/png"
+      "the png")))
+
 (defn about-page
   "Serve about page"
   [request]
@@ -19,14 +44,9 @@
   "Serve top-level request"
   [request]
   (let [id (get-in request [:path-params :id])]
-    (let [[linkHeader linkHeaderValue responseValue]
       (if (not= "image/png" (get (:headers request) "accept"))
-        (conj (header/get-png-link-header id)
-          (persistence/get-destination-by-id id))
-        (conj (header/get-url-link-header id) "the png"))]
-      (ring-resp/header
-        (ring-resp/response responseValue)
-          linkHeader linkHeaderValue))))
+        (get-plain-text-response id)
+        (get-image-png-response id))))
 
 (defn top-level-post
   "Satisfy top-level post request"

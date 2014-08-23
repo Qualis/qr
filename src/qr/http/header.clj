@@ -1,5 +1,11 @@
 (ns qr.http.header)
 
+(def ^:const TEXT_HTML_CONTENT_TYPE {"Content-Type" "text/html;charset=UTF-8"})
+(def ^:const TEXT_PLAIN_CONTENT_TYPE {"Content-Type" "text/plain"})
+(def ^:const IMAGE_PNG_CONTENT_TYPE {"Content-Type" "image/png"})
+(def ^:const ACCEPT_IMAGE_PNG {"Accept" "image/png"})
+(def ^:const ACCEPT_PLAIN_TEXT {"Accept" "text/plain"})
+
 (defn get-link-header
   "get link header string"
   [id type title method]
