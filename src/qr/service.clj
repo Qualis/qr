@@ -6,7 +6,9 @@
               [ring.util.response :as ring-resp]
               [clojure.data.json :as json]
               [qr.http.header :as header]
-              [qr.persistence.riak :as persistence]))
+              [qr.persistence.riak :as persistence]
+              [clj.qrgen :as qr]
+              [clojure.java.io :as io]))
 
 (defn get-response
   "get response"
@@ -15,7 +17,7 @@
     (ring-resp/response body)
       linkHeader linkHeaderValue) contentTypeHeader))
 
-(defn get-plain-text-response
+(defn get-text-plain-response
   "get plain text response"
   [id]
   (let [[linkHeader linkHeaderValue] (header/get-png-link-header id)]
@@ -29,7 +31,7 @@
   (let [[linkHeader linkHeaderValue] (header/get-url-link-header id)]
     (get-response
       linkHeader linkHeaderValue "image/png"
-      "the png")))
+      (io/input-stream (qr/as-bytes (qr/from id))))))
 
 (defn about-page
   "Serve about page"
@@ -42,8 +44,8 @@
   "Serve top-level request"
   [request]
   (let [id (get-in request [:path-params :id])]
-      (if (not= "image/png" (get (:headers request) "accept"))
-        (get-plain-text-response id)
+      (if (= "text/plain" (get (:headers request) "accept"))
+        (get-text-plain-response id)
         (get-image-png-response id))))
 
 (defn top-level-post

@@ -15,7 +15,8 @@
                  [org.slf4j/log4j-over-slf4j "1.7.7"]
 
                  [org.clojure/data.json "0.2.5"]
-                 [com.novemberain/welle "3.0.0"]]
+                 [com.novemberain/welle "3.0.0"]
+                 [clj.qrgen "0.2.0"]]
 
   :plugins [[lein-bikeshed "0.1.7"]
             [lein-vanity "0.2.0"]

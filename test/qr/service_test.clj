@@ -5,7 +5,8 @@
             [qr.service :as service]
             [clojure.data.json :as json]
             [qr.http.header :as header]
-            [qr.persistence.riak :as persistence]))
+            [qr.persistence.riak :as persistence]
+            [clj.qrgen :as qr]))
 
 (def service
   (::bootstrap/service-fn (bootstrap/create-servlet service/service)))
@@ -72,8 +73,8 @@
 
 (deftest top-level-get-test
   (let [response (response-for service :get (get-url))]
-    (is (=(:body response) GET_METHOD_URL))
-    (regex-header-matcher TEXT_PLAIN_RESPONSE_HEADER (:headers response))))
+    (is (=(:body response) (String. (qr/as-bytes (qr/from generated-id)))))
+    (regex-header-matcher IMAGE_PNG_RESPONSE_HEADER (:headers response))))
 
 (deftest top-level-get-accept-text-plain-test
   (let [response (response-for service :get (get-url)
@@ -84,7 +85,7 @@
 (deftest top-level-get-accept-image-png-test
   (let [response (response-for service :get (get-url)
       :headers header/ACCEPT_IMAGE_PNG)]
-    (is (=(:body response) "the png"))
+    (is (= (:body response) (String. (qr/as-bytes (qr/from generated-id)))))
     (regex-header-matcher IMAGE_PNG_RESPONSE_HEADER (:headers response))))
 
 (deftest about-page-test
