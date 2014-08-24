@@ -10,18 +10,17 @@
 
 (defn get-response
   "get response"
-  [linkHeader linkHeaderValue contentTypeHeader contentTypeHeaderValue body]
-  (ring-resp/header (ring-resp/header
+  [linkHeader linkHeaderValue contentTypeHeader body]
+  (ring-resp/content-type (ring-resp/header
     (ring-resp/response body)
-      linkHeader linkHeaderValue) contentTypeHeader contentTypeHeaderValue))
+      linkHeader linkHeaderValue) contentTypeHeader))
 
 (defn get-plain-text-response
   "get plain text response"
   [id]
   (let [[linkHeader linkHeaderValue] (header/get-png-link-header id)]
     (get-response
-      linkHeader linkHeaderValue
-      "Content-Type" "text/plain"
+      linkHeader linkHeaderValue "text/plain"
       (persistence/get-destination-by-id id))))
 
 (defn get-image-png-response
@@ -29,8 +28,7 @@
   [id]
   (let [[linkHeader linkHeaderValue] (header/get-url-link-header id)]
     (get-response
-      linkHeader linkHeaderValue
-      "Content-Type" "image/png"
+      linkHeader linkHeaderValue "image/png"
       "the png")))
 
 (defn about-page
