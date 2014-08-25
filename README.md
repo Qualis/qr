@@ -11,6 +11,14 @@ Start the application in:
 
 Navigate to [localhost:8080](http://localhost:8080/)
 
+Using curl:
+
+* create record: curl -i -H 'Content-Type: application/json' -X POST -d '{"url":"http://qual.is/"}' http://localhost:8080/
+  * you can now grab the id from the link header e.g. the id in the following example is `8a6f12eb-80b6-4f78-ac5e-1b1ee948e987`
+    * Link: </8a6f12eb-80b6-4f78-ac5e-1b1ee948e987>;rel="self";type="image/png";title="GET PNG";method="GET"
+* retrieve url: curl -i -X GET -H "Accept: text/plain"  http://localhost:8080/8a6f12eb-80b6-4f78-ac5e-1b1ee948e987
+* retrieve QR image: curl -o ~/Documents/test.png -X GET -H "Accept: image/png"  http://localhost:8080/8a6f12eb-80b6-4f78-ac5e-1b1ee948e987
+
 ## Testing the application
 
 Run: 
