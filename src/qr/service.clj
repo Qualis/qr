@@ -31,6 +31,14 @@
       linkHeader linkHeaderValue "text/plain"
       (persistence/get-destination-by-id id))))
 
+(defn get-redirect-response
+  "get redirect response"
+  [id]
+  (let [[linkHeader linkHeaderValue] (header/get-png-link-header id)]
+    (ring-response/header
+      (ring-response/redirect (persistence/get-destination-by-id id))
+      linkHeader linkHeaderValue)))
+
 (defn get-image-png-response
   "get image png response"
   [request id]
@@ -52,7 +60,9 @@
   (let [id (get-in request [:path-params :id])]
       (if (= "text/plain" (get (:headers request) "accept"))
         (get-text-plain-response id)
-        (get-image-png-response request id))))
+        (if (= "image/png" (get (:headers request) "accept"))
+          (get-image-png-response request id)
+          (get-redirect-response id)))))
 
 (defn top-level-post
   "Satisfy top-level post request"

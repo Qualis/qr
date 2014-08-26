@@ -40,6 +40,9 @@
 (def ^:const HOST_URL "http://localhost:8080/")
 (def ^:const HOST_HEADER {"Host" "localhost:8080"})
 
+(def ^:const REDIRECT_RESPONSE_HEADER
+  (conj DEFAULT_HEADER {"Location" GET_METHOD_URL}))
+
 (defn setup
   "add fixture data"
   []
@@ -80,8 +83,8 @@
 (deftest top-level-get-test
   (let [response (response-for service :get (get-url)
       :headers HOST_HEADER)]
-    (is (= (:body response) (get-expected-qr-code generated-id)))
-    (regex-header-matcher IMAGE_PNG_RESPONSE_HEADER (:headers response))))
+    (is (= (:body response) ""))
+    (regex-header-matcher REDIRECT_RESPONSE_HEADER (:headers response))))
 
 (deftest top-level-get-accept-text-plain-test
   (let [response (response-for service :get (get-url)
