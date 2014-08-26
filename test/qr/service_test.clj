@@ -37,7 +37,8 @@
 (def ^:const GET_METHOD_URL "http://www.qual.is/")
 (def ^:const POST_METHOD_URL "http://www.google.com.au/")
 (def ^:const POST_METHOD_JSON {:url POST_METHOD_URL})
-(def ^:const ROOT_URL_PATH "/")
+(def ^:const HOST_URL "http://localhost:8080/")
+(def ^:const HOST_HEADER {"Host" "localhost:8080"})
 
 (defn setup
   "add fixture data"
@@ -58,13 +59,18 @@
   (doseq [[headerName headerValue] regex]
     (is (re-matches (re-pattern headerValue) (get compareTo headerName)))))
 
+(defn get-expected-qr-code
+  "returns the qr code image string form for a given ID"
+  [id]
+  (String. (qr/as-bytes (qr/from (str HOST_URL generated-id)))))
+
 (defn get-url
   "get url path for last generated id"
   []
-  (str ROOT_URL_PATH generated-id))
+  (str HOST_URL generated-id))
 
 (deftest top-level-post-test
-  (let [response (response-for service :post ROOT_URL_PATH
+  (let [response (response-for service :post HOST_URL
       :body (json/write-str POST_METHOD_JSON)
       :headers {"Content-Type" "application/json"})]
     (persistence/delete-record (header/get-id-from-link-header response))
@@ -72,8 +78,9 @@
     (regex-header-matcher POST_RESPONSE_HEADER (:headers response))))
 
 (deftest top-level-get-test
-  (let [response (response-for service :get (get-url))]
-    (is (=(:body response) (String. (qr/as-bytes (qr/from generated-id)))))
+  (let [response (response-for service :get (get-url)
+      :headers HOST_HEADER)]
+    (is (= (:body response) (get-expected-qr-code generated-id)))
     (regex-header-matcher IMAGE_PNG_RESPONSE_HEADER (:headers response))))
 
 (deftest top-level-get-accept-text-plain-test
@@ -84,11 +91,11 @@
 
 (deftest top-level-get-accept-image-png-test
   (let [response (response-for service :get (get-url)
-      :headers header/ACCEPT_IMAGE_PNG)]
-    (is (= (:body response) (String. (qr/as-bytes (qr/from generated-id)))))
+      :headers (conj header/ACCEPT_IMAGE_PNG HOST_HEADER))]
+    (is (= (:body response) (get-expected-qr-code generated-id)))
     (regex-header-matcher IMAGE_PNG_RESPONSE_HEADER (:headers response))))
 
 (deftest about-page-test
-  (let [response (response-for service :get (str ROOT_URL_PATH "about"))]
+  (let [response (response-for service :get (str HOST_URL "about"))]
     (is (.contains (:body response) "Clojure 1.6"))
     (regex-header-matcher TEXT_HTML_RESPONSE_HEADER (:headers response))))
