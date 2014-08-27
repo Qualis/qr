@@ -1,5 +1,5 @@
 (defproject qr "0.0.1-SNAPSHOT"
-  :description "URL shortening and QR code service for resource links"
+  :description "ShortURL - URL shortening service"
   :url "http://qr.qual.is/"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
@@ -16,7 +16,9 @@
 
                  [org.clojure/data.json "0.2.5"]
                  [com.novemberain/welle "3.0.0"]
-                 [clj.qrgen "0.2.0"]]
+                 [clj.qrgen "0.2.0"]
+                 [selmer "0.6.9"]
+                 [clj-time "0.8.0"]]
 
   :plugins [[lein-bikeshed "0.1.7"]
             [lein-vanity "0.2.0"]

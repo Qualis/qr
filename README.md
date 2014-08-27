@@ -1,6 +1,6 @@
 # qr
 
-URL shortening and QR code service for resource links
+ShortURL - URL shortening service
 
 ## Starting the application
 

@@ -67,10 +67,10 @@
   [id]
   (String. (qr/as-bytes (qr/from (str HOST_URL generated-id)))))
 
-(defn get-url
+(defn get-url-with-id
   "get url path for last generated id"
-  []
-  (str HOST_URL generated-id))
+  [id]
+  (str HOST_URL id))
 
 (deftest top-level-post-test
   (let [response (response-for service :post HOST_URL
@@ -81,19 +81,24 @@
     (regex-header-matcher POST_RESPONSE_HEADER (:headers response))))
 
 (deftest top-level-get-test
-  (let [response (response-for service :get (get-url)
+  (let [response (response-for service :get HOST_URL :headers HOST_HEADER)]
+    (is (.contains (:body response) "ShortURL - URL shortening service"))
+    (regex-header-matcher TEXT_HTML_RESPONSE_HEADER (:headers response))))
+
+(deftest top-level-get-no-accept-header-test
+  (let [response (response-for service :get (get-url-with-id generated-id)
       :headers HOST_HEADER)]
     (is (= (:body response) ""))
     (regex-header-matcher REDIRECT_RESPONSE_HEADER (:headers response))))
 
 (deftest top-level-get-accept-text-plain-test
-  (let [response (response-for service :get (get-url)
+  (let [response (response-for service :get (get-url-with-id generated-id)
       :headers header/ACCEPT_PLAIN_TEXT)]
     (is (=(:body response) GET_METHOD_URL))
     (regex-header-matcher TEXT_PLAIN_RESPONSE_HEADER (:headers response))))
 
 (deftest top-level-get-accept-image-png-test
-  (let [response (response-for service :get (get-url)
+  (let [response (response-for service :get (get-url-with-id generated-id)
       :headers (conj header/ACCEPT_IMAGE_PNG HOST_HEADER))]
     (is (= (:body response) (get-expected-qr-code generated-id)))
     (regex-header-matcher IMAGE_PNG_RESPONSE_HEADER (:headers response))))
