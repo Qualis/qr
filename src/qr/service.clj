@@ -58,6 +58,25 @@
       linkHeader linkHeaderValue "image/png"
       (io/input-stream (get-qr-code request)))))
 
+(defn create-from-json
+  "create record from JSON request"
+  [request]
+  (let [[linkHeader linkHeaderValue]
+      (header/get-png-link-header
+        (persistence/create-record (get (:json-params request) :url)))]
+    (ring-response/header
+      (ring-response/response "")
+        linkHeader linkHeaderValue)))
+
+(defn create-from-form
+  "create record from form request"
+  [request]
+  (let [id (persistence/create-record (get (:form-params request) "url"))]
+    (let [[linkHeader linkHeaderValue] (header/get-url-link-header id)]
+      (ring-response/header (ring-response/redirect
+        (str (ring-request/request-url request) id))
+        linkHeader linkHeaderValue))))
+
 (defn about-page
   "Serve about page"
   [request]
@@ -83,12 +102,9 @@
 (defn top-level-post
   "Satisfy top-level post request"
   [request]
-  (let [[linkHeader linkHeaderValue responseValue]
-      (conj (header/get-png-link-header
-        (persistence/create-record (get (:json-params request) :url))) "")]
-    (ring-response/header
-      (ring-response/response responseValue)
-        linkHeader linkHeaderValue)))
+  (if (= header/FORM_MIME_TYPE (ring-request/content-type request))
+    (create-from-form request)
+    (create-from-json request)))
 
 (defroutes routes
   [[["/" {:get top-level}

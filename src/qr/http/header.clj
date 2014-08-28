@@ -1,10 +1,17 @@
 (ns qr.http.header)
 
-(def ^:const TEXT_HTML_CONTENT_TYPE {"Content-Type" "text/html;charset=UTF-8"})
-(def ^:const TEXT_PLAIN_CONTENT_TYPE {"Content-Type" "text/plain"})
-(def ^:const IMAGE_PNG_CONTENT_TYPE {"Content-Type" "image/png"})
-(def ^:const ACCEPT_IMAGE_PNG {"Accept" "image/png"})
-(def ^:const ACCEPT_PLAIN_TEXT {"Accept" "text/plain"})
+(def ^:const TEXT_HTML_MIME_TYPE "text/html;charset=UTF-8")
+(def ^:const IMAGE_PNG_MIME_TYPE "image/png")
+(def ^:const PLAIN_TEXT_MIME_TYPE "text/plain")
+(def ^:const FORM_MIME_TYPE "application/x-www-form-urlencoded")
+(def ^:const APPLICATION_JSON_MIME_TYPE "application/json")
+(def ^:const ACCEPT_IMAGE_PNG {"Accept" IMAGE_PNG_MIME_TYPE})
+(def ^:const ACCEPT_PLAIN_TEXT {"Accept" PLAIN_TEXT_MIME_TYPE})
+(def ^:const TEXT_HTML_CONTENT_TYPE {"Content-Type" TEXT_HTML_MIME_TYPE})
+(def ^:const TEXT_PLAIN_CONTENT_TYPE {"Content-Type" PLAIN_TEXT_MIME_TYPE})
+(def ^:const IMAGE_PNG_CONTENT_TYPE {"Content-Type" IMAGE_PNG_MIME_TYPE})
+(def ^:const JSON_CONTENT_TYPE {"Content-Type" APPLICATION_JSON_MIME_TYPE})
+(def ^:const FORM_CONTENT_TYPE {"Content-Type" FORM_MIME_TYPE})
 
 (defn get-link-header
   "get link header string"

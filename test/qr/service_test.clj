@@ -6,7 +6,8 @@
             [clojure.data.json :as json]
             [qr.http.header :as header]
             [qr.persistence.riak :as persistence]
-            [clj.qrgen :as qr]))
+            [clj.qrgen :as qr]
+            [ring.util.codec :as encoder]))
 
 (def service
   (::bootstrap/service-fn (bootstrap/create-servlet service/service)))
@@ -31,12 +32,12 @@
   (conj header/IMAGE_PNG_CONTENT_TYPE DEFAULT_HEADER GET_URL_LINK_HEADER))
 (def ^:const TEXT_HTML_RESPONSE_HEADER
   (conj header/TEXT_HTML_CONTENT_TYPE DEFAULT_HEADER))
-(def ^:const POST_RESPONSE_HEADER
+(def ^:const POST_JSON_RESPONSE_HEADER
   (conj TEXT_HTML_RESPONSE_HEADER GET_PNG_LINK_HEADER))
 
 (def ^:const GET_METHOD_URL "http://www.qual.is/")
 (def ^:const POST_METHOD_URL "http://www.google.com.au/")
-(def ^:const POST_METHOD_JSON {:url POST_METHOD_URL})
+(def ^:const POST_METHOD_ARGUMENT {:url POST_METHOD_URL})
 (def ^:const HOST_URL "http://localhost:8080/")
 (def ^:const HOST_HEADER {"Host" "localhost:8080"})
 
@@ -72,13 +73,27 @@
   [id]
   (str HOST_URL id))
 
-(deftest top-level-post-test
+(deftest top-level-post-test-json
   (let [response (response-for service :post HOST_URL
-      :body (json/write-str POST_METHOD_JSON)
-      :headers {"Content-Type" "application/json"})]
-    (persistence/delete-record (header/get-id-from-link-header response))
-    (is (= (:body response) ""))
-    (regex-header-matcher POST_RESPONSE_HEADER (:headers response))))
+      :body (json/write-str POST_METHOD_ARGUMENT)
+      :headers header/JSON_CONTENT_TYPE)]
+    (let [id (header/get-id-from-link-header response)]
+      (is (= POST_METHOD_URL (persistence/get-destination-by-id id)))
+      (persistence/delete-record id)
+      (is (= (:body response) ""))
+      (regex-header-matcher POST_JSON_RESPONSE_HEADER (:headers response)))))
+
+(deftest top-level-post-test-form
+  (let [response (response-for service :post HOST_URL
+      :body (encoder/form-encode POST_METHOD_ARGUMENT)
+      :headers (conj header/FORM_CONTENT_TYPE HOST_HEADER))]
+    (let [id (header/get-id-from-link-header response)]
+      (is (= POST_METHOD_URL (persistence/get-destination-by-id id)))
+      (persistence/delete-record id)
+      (is (= (:body response) ""))
+      (regex-header-matcher
+        (conj DEFAULT_HEADER {"Location" (str HOST_URL id)})
+        (:headers response)))))
 
 (deftest top-level-get-test
   (let [response (response-for service :get HOST_URL :headers HOST_HEADER)]
