@@ -16,16 +16,24 @@
 
 (def date-time-formatter (time-format/formatters :date))
 
-(defn get-home
+(defn get-home-create
   "returns the home page HTML"
   []
   (selmer-parser/render-file "public/home.html" {
     :generated (time-format/unparse date-time-formatter (time/now))}))
 
+(defn get-home-view
+  "returns the view page HTML"
+  [request id]
+  (selmer-parser/render-file "public/view.html" {
+    :generated (time-format/unparse date-time-formatter (time/now))
+    :destination (persistence/get-destination-by-id id)
+    :id id}))
+
 (defn get-qr-code
   "returns the qr code for a given request/id"
-  [request]
-  (qr/as-bytes (qr/from (ring-request/request-url request))))
+  [url]
+  (qr/as-bytes (qr/from url)))
 
 (defn get-response
   "get response"
@@ -56,7 +64,7 @@
   (let [[linkHeader linkHeaderValue] (header/get-url-link-header id)]
     (get-response
       linkHeader linkHeaderValue "image/png"
-      (io/input-stream (get-qr-code request)))))
+      (io/input-stream (get-qr-code (ring-request/request-url request))))))
 
 (defn create-from-json
   "create record from JSON request"
@@ -74,20 +82,23 @@
   (let [id (persistence/create-record (get (:form-params request) "url"))]
     (let [[linkHeader linkHeaderValue] (header/get-url-link-header id)]
       (ring-response/header (ring-response/redirect
-        (str (ring-request/request-url request) id))
+        (str (ring-request/request-url request) "?id=" id))
         linkHeader linkHeaderValue))))
 
 (defn about-page
   "Serve about page"
   [request]
   (ring-response/response (format "Clojure %s - served from %s"
-                        (clojure-version)
-                        (route/url-for ::about-page))))
+    (clojure-version)
+    (route/url-for ::about-page))))
 
 (defn top-level
   "Serve top-level request"
   [request]
-  (ring-response/response (get-home)))
+  (let [id (get (:query-params request) :id)]
+    (if (nil? id)
+      (ring-response/response (get-home-create))
+      (ring-response/response (get-home-view request id)))))
 
 (defn top-level-with-id
   "Serve top-level request"
@@ -95,7 +106,7 @@
   (let [id (get-in request [:path-params :id])]
       (if (= "text/plain" (get (:headers request) "accept"))
         (get-text-plain-response id)
-        (if (= "image/png" (get (:headers request) "accept"))
+        (if (.contains "image/png" (get (:headers request) "accept"))
           (get-image-png-response request id)
           (get-redirect-response id)))))
 
@@ -114,7 +125,7 @@
      ["/" {:post top-level-post}]]]])
 
 (def service "Service definition" {:env :prod
-              ::bootstrap/routes routes
-              ::bootstrap/resource-path "/public"
-              ::bootstrap/type :jetty
-              ::bootstrap/port 8080})
+  ::bootstrap/routes routes
+  ::bootstrap/resource-path "/public"
+  ::bootstrap/type :jetty
+  ::bootstrap/port 8080})

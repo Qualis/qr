@@ -7,6 +7,7 @@
 (def ^:const APPLICATION_JSON_MIME_TYPE "application/json")
 (def ^:const ACCEPT_IMAGE_PNG {"Accept" IMAGE_PNG_MIME_TYPE})
 (def ^:const ACCEPT_PLAIN_TEXT {"Accept" PLAIN_TEXT_MIME_TYPE})
+(def ^:const ACCEPT_HTML_TEXT {"Accept" TEXT_HTML_MIME_TYPE})
 (def ^:const TEXT_HTML_CONTENT_TYPE {"Content-Type" TEXT_HTML_MIME_TYPE})
 (def ^:const TEXT_PLAIN_CONTENT_TYPE {"Content-Type" PLAIN_TEXT_MIME_TYPE})
 (def ^:const IMAGE_PNG_CONTENT_TYPE {"Content-Type" IMAGE_PNG_MIME_TYPE})

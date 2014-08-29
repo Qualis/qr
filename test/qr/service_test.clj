@@ -92,17 +92,23 @@
       (persistence/delete-record id)
       (is (= (:body response) ""))
       (regex-header-matcher
-        (conj DEFAULT_HEADER {"Location" (str HOST_URL id)})
+        (conj DEFAULT_HEADER {"Location" (str HOST_URL "\\?id=" id)})
         (:headers response)))))
 
-(deftest top-level-get-test
+(deftest top-level-get-test-no-id
   (let [response (response-for service :get HOST_URL :headers HOST_HEADER)]
+    (is (.contains (:body response) "ShortURL - URL shortening service"))
+    (regex-header-matcher TEXT_HTML_RESPONSE_HEADER (:headers response))))
+
+(deftest top-level-get-test-with-id
+  (let [response (response-for service :get (str HOST_URL "?id=" generated-id)
+      :headers HOST_HEADER)]
     (is (.contains (:body response) "ShortURL - URL shortening service"))
     (regex-header-matcher TEXT_HTML_RESPONSE_HEADER (:headers response))))
 
 (deftest top-level-get-no-accept-header-test
   (let [response (response-for service :get (get-url-with-id generated-id)
-      :headers HOST_HEADER)]
+      :headers (conj header/ACCEPT_HTML_TEXT HOST_HEADER))]
     (is (= (:body response) ""))
     (regex-header-matcher REDIRECT_RESPONSE_HEADER (:headers response))))
 
