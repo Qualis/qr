@@ -106,7 +106,7 @@
   (let [id (get-in request [:path-params :id])]
       (if (= "text/plain" (get (:headers request) "accept"))
         (get-text-plain-response id)
-        (if (.contains "image/png" (get (:headers request) "accept"))
+        (if (.contains (get (:headers request) "accept") "image/")
           (get-image-png-response request id)
           (get-redirect-response id)))))
 
