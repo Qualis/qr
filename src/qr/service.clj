@@ -106,9 +106,10 @@
   (let [id (get-in request [:path-params :id])]
       (if (= "text/plain" (get (:headers request) "accept"))
         (get-text-plain-response id)
-        (if (.contains (get (:headers request) "accept") "image/")
-          (get-image-png-response request id)
-          (get-redirect-response id)))))
+        (if (nil? (or (= "image/png" (get (:headers request) "accept"))
+            (get (:query-params request) :qr)))
+          (get-redirect-response id)
+          (get-image-png-response request id)))))
 
 (defn top-level-post
   "Satisfy top-level post request"

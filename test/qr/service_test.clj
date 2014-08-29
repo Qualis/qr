@@ -103,14 +103,20 @@
 (deftest top-level-get-test-with-id
   (let [response (response-for service :get (str HOST_URL "?id=" generated-id)
       :headers HOST_HEADER)]
-    (is (.contains (:body response) "ShortURL - URL shortening service"))
+    (is (.contains (:body response) generated-id))
     (regex-header-matcher TEXT_HTML_RESPONSE_HEADER (:headers response))))
 
-(deftest top-level-get-no-accept-header-test
+(deftest top-level-get-accept-text-html-test
   (let [response (response-for service :get (get-url-with-id generated-id)
       :headers (conj header/ACCEPT_HTML_TEXT HOST_HEADER))]
     (is (= (:body response) ""))
     (regex-header-matcher REDIRECT_RESPONSE_HEADER (:headers response))))
+
+(deftest top-level-get-accept-text-html-qr-true-test
+  (let [response (response-for service
+      :get (str (get-url-with-id generated-id) "?qr=true")
+      :headers (conj header/ACCEPT_HTML_TEXT HOST_HEADER))]
+    (regex-header-matcher IMAGE_PNG_RESPONSE_HEADER (:headers response))))
 
 (deftest top-level-get-accept-text-plain-test
   (let [response (response-for service :get (get-url-with-id generated-id)
