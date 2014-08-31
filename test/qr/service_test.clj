@@ -20,11 +20,11 @@
 
 (def ^:const GET_URL_LINK_HEADER {
   "Link"
-  "</.{36}>;rel=\"self\";type=\"text/plain\";title=\"GET URL\";method=\"GET\""})
+  "</.*>;rel=\"self\";type=\"text/plain\";title=\"GET URL\";method=\"GET\""})
 
 (def ^:const GET_PNG_LINK_HEADER {
   "Link"
-  "</.{36}>;rel=\"self\";type=\"image/png\";title=\"GET PNG\";method=\"GET\""})
+  "</.*>;rel=\"self\";type=\"image/png\";title=\"GET PNG\";method=\"GET\""})
 
 (def ^:const TEXT_PLAIN_RESPONSE_HEADER
   (conj header/TEXT_PLAIN_CONTENT_TYPE DEFAULT_HEADER GET_PNG_LINK_HEADER))
