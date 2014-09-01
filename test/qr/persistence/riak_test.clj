@@ -1,8 +1,6 @@
 (ns qr.persistence.riak-test
   (:require [clojure.test :refer :all]
-            [qr.persistence.riak :as persistence]
-            [clojurewerkz.welle.core :as wc]
-            [clojurewerkz.welle.buckets :as wb]))
+            [qr.persistence.riak :as persistence]))
 
 (def list-of-id [])
 
@@ -12,7 +10,7 @@
 
 (deftest exists-test
   (let [result (persistence/create-record "http://www.google.com.au")]
-    (is (persistence/exists result))
+    (is (persistence/exists? result))
     (persistence/delete-record result)))
 
 (deftest read-record-test

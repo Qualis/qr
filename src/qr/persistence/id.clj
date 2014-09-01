@@ -12,9 +12,9 @@
 
 (defn generate-id
   "generate id for record (exclude existing)"
-  [exists-checker]
+  [exists?]
   (loop []
     (let [time-id (hashid/encrypt (get-timestamp) SALT)]
-      (if (not (exists-checker time-id))
+      (if (not (exists? time-id))
         time-id
         (recur)))))
