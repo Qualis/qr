@@ -63,7 +63,7 @@
 
 (defn get-expected-qr-code
   [id]
-  (String. (qr/as-bytes (qr/from (str HOST_URL generated-id)))))
+  (String. (qr/as-bytes (qr/from (str HOST_URL id)))))
 
 (defn get-url-with-id
   [id]
