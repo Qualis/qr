@@ -5,7 +5,7 @@
             [qr.persistence.id :as id-generator]))
 
 (def ^:const BUCKET "resource")
-(def connection (welle/connect))
+(def connection (welle/connect-via-pb))
 
 (defn read-record
   "read record"

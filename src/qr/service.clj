@@ -11,22 +11,22 @@
               [clj.qrgen :as qr]
               [clojure.java.io :as io]
               [selmer.parser :as selmer-parser]
-              [clj-time.core :as time]
+              [clj-time.local :as time]
               [clj-time.format :as time-format]))
 
-(def date-time-formatter (time-format/formatters :date))
+(def date-formatter (time-format/formatters :date))
 
 (defn get-home-create
   "returns the home page HTML"
   []
   (selmer-parser/render-file "public/home.html" {
-    :generated (time-format/unparse date-time-formatter (time/now))}))
+    :generated (time-format/unparse date-formatter (time/local-now))}))
 
 (defn get-home-view
   "returns the view page HTML"
   [request id]
   (selmer-parser/render-file "public/view.html" {
-    :generated (time-format/unparse date-time-formatter (time/now))
+    :generated (time-format/unparse date-formatter (time/local-now))
     :destination (persistence/get-destination-by-id id)
     :id id}))
 
