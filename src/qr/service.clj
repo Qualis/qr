@@ -16,6 +16,16 @@
 
 (def date-formatter (time-format/formatters :date))
 
+(defn get-short-url
+  "returns the short-url for the request"
+  [request id]
+  (str
+     (-> request :scheme name)
+     "://"
+     (get-in request [:headers "host"])
+     "/"
+     id))
+
 (defn get-home-create
   "returns the home page HTML"
   []
@@ -28,6 +38,7 @@
   (selmer-parser/render-file "public/view.html" {
     :generated (time-format/unparse date-formatter (time/local-now))
     :destination (persistence/get-destination-by-id id)
+    :short-url (get-short-url request id)
     :id id}))
 
 (defn get-qr-code
