@@ -85,23 +85,16 @@
         (str (ring-request/request-url request) "?id=" id))
         linkHeader linkHeaderValue))))
 
-(defn about-page
-  "Serve about page"
-  [request]
-  (ring-response/response (format "Clojure %s - served from %s"
-    (clojure-version)
-    (route/url-for ::about-page))))
-
-(defn top-level
-  "Serve top-level request"
+(defn top-level-get
+  "serve top level get request"
   [request]
   (let [id (get (:query-params request) :id)]
     (if (nil? id)
       (ring-response/response (get-home-create))
       (ring-response/response (get-home-view request id)))))
 
-(defn top-level-with-id
-  "Serve top-level request"
+(defn top-level-get-with-path-id
+  "serve top level get request with path id"
   [request]
   (let [id (get-in request [:path-params :id])]
       (if (= "text/plain" (get (:headers request) "accept"))
@@ -112,17 +105,16 @@
           (get-image-png-response request id)))))
 
 (defn top-level-post
-  "Satisfy top-level post request"
+  "satisfy top level post request"
   [request]
   (if (= header/FORM_MIME_TYPE (ring-request/content-type request))
     (create-from-form request)
     (create-from-json request)))
 
 (defroutes routes
-  [[["/" {:get top-level}
+  [[["/" {:get top-level-get}
      ^:interceptors [(body-params/body-params) bootstrap/html-body]
-     ["/about" {:get about-page}]
-     ["/:id" {:get top-level-with-id}]
+     ["/:id" {:get top-level-get-with-path-id}]
      ["/" {:post top-level-post}]]]])
 
 (def service "Service definition" {:env :prod

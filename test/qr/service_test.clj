@@ -73,7 +73,7 @@
   [id]
   (str HOST_URL id))
 
-(deftest top-level-post-test-json
+(deftest satisfies-post-with-json-data
   (let [response (response-for service :post HOST_URL
       :body (json/write-str POST_METHOD_ARGUMENT)
       :headers header/JSON_CONTENT_TYPE)]
@@ -83,7 +83,7 @@
       (is (= (:body response) ""))
       (regex-header-matcher POST_JSON_RESPONSE_HEADER (:headers response)))))
 
-(deftest top-level-post-test-form
+(deftest satisfies-post-with-form-data
   (let [response (response-for service :post HOST_URL
       :body (encoder/form-encode POST_METHOD_ARGUMENT)
       :headers (conj header/FORM_CONTENT_TYPE HOST_HEADER))]
@@ -95,42 +95,37 @@
         (conj DEFAULT_HEADER {"Location" (str HOST_URL "\\?id=" id)})
         (:headers response)))))
 
-(deftest top-level-get-test-no-id
+(deftest get-with-no-id-serves-home
   (let [response (response-for service :get HOST_URL :headers HOST_HEADER)]
     (is (.contains (:body response) "ShortURL - URL shortening service"))
     (regex-header-matcher TEXT_HTML_RESPONSE_HEADER (:headers response))))
 
-(deftest top-level-get-test-with-id
+(deftest get-with-id-query-string-serves-view
   (let [response (response-for service :get (str HOST_URL "?id=" generated-id)
       :headers HOST_HEADER)]
     (is (.contains (:body response) generated-id))
     (regex-header-matcher TEXT_HTML_RESPONSE_HEADER (:headers response))))
 
-(deftest top-level-get-accept-text-html-test
-  (let [response (response-for service :get (get-url-with-id generated-id)
-      :headers (conj header/ACCEPT_HTML_TEXT HOST_HEADER))]
-    (is (= (:body response) ""))
-    (regex-header-matcher REDIRECT_RESPONSE_HEADER (:headers response))))
-
-(deftest top-level-get-accept-text-html-qr-true-test
+(deftest get-with-qr-true-query-string-serves-view
   (let [response (response-for service
       :get (str (get-url-with-id generated-id) "?qr=true")
       :headers (conj header/ACCEPT_HTML_TEXT HOST_HEADER))]
     (regex-header-matcher IMAGE_PNG_RESPONSE_HEADER (:headers response))))
 
-(deftest top-level-get-accept-text-plain-test
+(deftest get-with-path-id-and-accept-header-text-html-redirects-to-destination
+  (let [response (response-for service :get (get-url-with-id generated-id)
+      :headers (conj header/ACCEPT_HTML_TEXT HOST_HEADER))]
+    (is (= (:body response) ""))
+    (regex-header-matcher REDIRECT_RESPONSE_HEADER (:headers response))))
+
+(deftest get-with-path-id-and-accept-header-text-plain-gives-destination-as-text
   (let [response (response-for service :get (get-url-with-id generated-id)
       :headers header/ACCEPT_PLAIN_TEXT)]
     (is (=(:body response) GET_METHOD_URL))
     (regex-header-matcher TEXT_PLAIN_RESPONSE_HEADER (:headers response))))
 
-(deftest top-level-get-accept-image-png-test
+(deftest get-with-path-id-and-accept-header-image-png-gives-short-url-as-qr
   (let [response (response-for service :get (get-url-with-id generated-id)
       :headers (conj header/ACCEPT_IMAGE_PNG HOST_HEADER))]
     (is (= (:body response) (get-expected-qr-code generated-id)))
     (regex-header-matcher IMAGE_PNG_RESPONSE_HEADER (:headers response))))
-
-(deftest about-page-test
-  (let [response (response-for service :get (str HOST_URL "about"))]
-    (is (.contains (:body response) "Clojure 1.6"))
-    (regex-header-matcher TEXT_HTML_RESPONSE_HEADER (:headers response))))
