@@ -6,7 +6,6 @@
 (defonce runnable-service (server/create-server service/service))
 
 (defn run-dev
-  "The entry-point for 'lein run-dev'"
   [& args]
   (println "\nCreating your [DEV] server...")
   (-> runnable-service
@@ -20,7 +19,6 @@
   (server/start runnable-service))
 
 (defn -main
-  "The entry-point for 'lein run'"
   [& args]
   (println "\nCreating your server...")
   (server/start runnable-service))

@@ -17,7 +17,6 @@
 (def date-formatter (time-format/formatters :date))
 
 (defn get-short-url
-  "returns the short-url for the request"
   [request id]
   (str
      (-> request :scheme name)
@@ -27,13 +26,11 @@
      id))
 
 (defn get-home-create
-  "returns the home page HTML"
   []
   (selmer-parser/render-file "public/home.html" {
     :generated (time-format/unparse date-formatter (time/local-now))}))
 
 (defn get-home-view
-  "returns the view page HTML"
   [request id]
   (selmer-parser/render-file "public/view.html" {
     :generated (time-format/unparse date-formatter (time/local-now))
@@ -42,19 +39,16 @@
     :id id}))
 
 (defn get-qr-code
-  "returns the qr code for a given request/id"
   [url]
   (qr/as-bytes (qr/from url)))
 
 (defn get-response
-  "get response"
   [linkHeader linkHeaderValue contentTypeHeader body]
   (ring-response/content-type (ring-response/header
     (ring-response/response body)
       linkHeader linkHeaderValue) contentTypeHeader))
 
 (defn get-text-plain-response
-  "get plain text response"
   [id]
   (let [[linkHeader linkHeaderValue] (header/get-png-link-header id)]
     (get-response
@@ -62,7 +56,6 @@
       (persistence/get-destination-by-id id))))
 
 (defn get-redirect-response
-  "get redirect response"
   [id]
   (let [[linkHeader linkHeaderValue] (header/get-png-link-header id)]
     (ring-response/header
@@ -70,7 +63,6 @@
       linkHeader linkHeaderValue)))
 
 (defn get-image-png-response
-  "get image png response"
   [request id]
   (let [[linkHeader linkHeaderValue] (header/get-url-link-header id)]
     (get-response
@@ -78,7 +70,6 @@
       (io/input-stream (get-qr-code (ring-request/request-url request))))))
 
 (defn create-from-json
-  "create record from JSON request"
   [request]
   (let [[linkHeader linkHeaderValue]
       (header/get-png-link-header
@@ -88,7 +79,6 @@
         linkHeader linkHeaderValue)))
 
 (defn create-from-form
-  "create record from form request"
   [request]
   (let [id (persistence/create-record (get (:form-params request) "url"))]
     (let [[linkHeader linkHeaderValue] (header/get-url-link-header id)]
@@ -97,7 +87,6 @@
         linkHeader linkHeaderValue))))
 
 (defn top-level-get
-  "serve top level get request"
   [request]
   (let [id (get (:query-params request) :id)]
     (if (nil? id)
@@ -105,7 +94,6 @@
       (ring-response/response (get-home-view request id)))))
 
 (defn top-level-get-with-path-id
-  "serve top level get request with path id"
   [request]
   (let [id (get-in request [:path-params :id])]
       (if (= "text/plain" (get (:headers request) "accept"))
@@ -116,7 +104,6 @@
           (get-image-png-response request id)))))
 
 (defn top-level-post
-  "satisfy top level post request"
   [request]
   (if (= header/FORM_MIME_TYPE (ring-request/content-type request))
     (create-from-form request)
@@ -128,7 +115,7 @@
      ["/:id" {:get top-level-get-with-path-id}]
      ["/" {:post top-level-post}]]]])
 
-(def service "Service definition" {:env :prod
+(def service {:env :prod
   ::bootstrap/routes routes
   ::bootstrap/resource-path "/public"
   ::bootstrap/type :jetty

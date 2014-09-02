@@ -45,7 +45,6 @@
   (conj DEFAULT_HEADER {"Location" GET_METHOD_URL}))
 
 (defn setup
-  "add fixture data"
   []
   (def generated-id (persistence/create-record GET_METHOD_URL)))
 
@@ -58,18 +57,15 @@
 (use-fixtures :once fixture)
 
 (defn regex-header-matcher
-  "Compare 2 header maps (first having regex value)"
   [regex compareTo]
   (doseq [[headerName headerValue] regex]
     (is (re-matches (re-pattern headerValue) (get compareTo headerName)))))
 
 (defn get-expected-qr-code
-  "returns the qr code image string form for a given ID"
   [id]
   (String. (qr/as-bytes (qr/from (str HOST_URL generated-id)))))
 
 (defn get-url-with-id
-  "get url path for last generated id"
   [id]
   (str HOST_URL id))
 
