@@ -6,24 +6,16 @@
               [ring.util.response :as ring-response]
               [ring.util.request :as ring-request]
               [clojure.data.json :as json]
-              [qr.http.header :as header]
-              [qr.persistence.riak :as persistence]
-              [clj.qrgen :as qr]
               [clojure.java.io :as io]
               [selmer.parser :as selmer-parser]
               [clj-time.local :as time]
-              [clj-time.format :as time-format]))
+              [clj-time.format :as time-format]
+              [qr.http.header :as header]
+              [qr.http.request :as request]
+              [qr.io.image :as image]
+              [qr.persistence.riak :as persistence]))
 
 (def date-formatter (time-format/formatters :date))
-
-(defn get-short-url
-  [request id]
-  (str
-     (-> request :scheme name)
-     "://"
-     (get-in request [:headers "host"])
-     "/"
-     id))
 
 (defn get-home-create
   []
@@ -35,12 +27,8 @@
   (selmer-parser/render-file "public/view.html" {
     :generated (time-format/unparse date-formatter (time/local-now))
     :destination (persistence/get-destination-by-id id)
-    :short-url (get-short-url request id)
+    :short-url (request/get-host-url request id)
     :id id}))
-
-(defn get-qr-code
-  [url]
-  (qr/as-bytes (qr/from url)))
 
 (defn get-response
   [linkHeader linkHeaderValue contentTypeHeader body]
@@ -67,7 +55,7 @@
   (let [[linkHeader linkHeaderValue] (header/get-url-link-header id)]
     (get-response
       linkHeader linkHeaderValue "image/png"
-      (io/input-stream (get-qr-code (ring-request/request-url request))))))
+      (io/input-stream (image/qr-for (ring-request/request-url request))))))
 
 (defn create-from-json
   [request]
