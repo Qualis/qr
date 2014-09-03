@@ -25,9 +25,9 @@ Using curl:
 
 * create record: `curl -i -H 'Content-Type: application/json' -X POST -d '{"url":"http://qual.is/"}' http://localhost:8080/`
   * you can now grab the id from the link header (id highlighted in following)
-    * Link: </`8a6f12eb-80b6-4f78-ac5e-1b1ee948e987`>;...
-* retrieve url: `curl -i -X GET -H "Accept: text/plain"  http://localhost:8080/8a6f12eb-80b6-4f78-ac5e-1b1ee948e987`
-* retrieve QR image: `curl -o ~/Documents/test.png -X GET -H "Accept: image/png"  http://localhost:8080/8a6f12eb-80b6-4f78-ac5e-1b1ee948e987`
+    * Link: </`bjLyz9p47R`>;...
+* retrieve url: `curl -i -X GET -H "Accept: text/plain"  http://localhost:8080/bjLyz9p47R`
+* retrieve QR image: `curl -o ~/Documents/test.png -X GET -H "Accept: image/png"  http://localhost:8080/bjLyz9p47R`
 
 ## Configuration
 
