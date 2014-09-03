@@ -12,6 +12,7 @@
               [clj-time.format :as time-format]
               [qr.http.header :as header]
               [qr.http.request :as request]
+              [qr.http.response :as response]
               [qr.io.image :as image]
               [qr.persistence.riak :as persistence]))
 
@@ -29,33 +30,6 @@
     :destination (persistence/get-destination-by-id id)
     :short-url (request/get-host-url request id)
     :id id}))
-
-(defn get-response
-  [linkHeader linkHeaderValue contentTypeHeader body]
-  (ring-response/content-type (ring-response/header
-    (ring-response/response body)
-      linkHeader linkHeaderValue) contentTypeHeader))
-
-(defn get-text-plain-response
-  [id]
-  (let [[linkHeader linkHeaderValue] (header/get-png-link-header id)]
-    (get-response
-      linkHeader linkHeaderValue "text/plain"
-      (persistence/get-destination-by-id id))))
-
-(defn get-redirect-response
-  [id]
-  (let [[linkHeader linkHeaderValue] (header/get-png-link-header id)]
-    (ring-response/header
-      (ring-response/redirect (persistence/get-destination-by-id id))
-      linkHeader linkHeaderValue)))
-
-(defn get-image-png-response
-  [request id]
-  (let [[linkHeader linkHeaderValue] (header/get-url-link-header id)]
-    (get-response
-      linkHeader linkHeaderValue "image/png"
-      (io/input-stream (image/qr-for (ring-request/request-url request))))))
 
 (defn create-from-json
   [request]
@@ -85,11 +59,11 @@
   [request]
   (let [id (get-in request [:path-params :id])]
       (if (= "text/plain" (get (:headers request) "accept"))
-        (get-text-plain-response id)
+        (response/text-plain-response-for id persistence/get-destination-by-id)
         (if (nil? (or (= "image/png" (get (:headers request) "accept"))
             (get (:query-params request) :qr)))
-          (get-redirect-response id)
-          (get-image-png-response request id)))))
+          (response/redirect-response-for id persistence/get-destination-by-id)
+          (response/image-png-response-for request id image/qr-for)))))
 
 (defn top-level-post
   [request]
