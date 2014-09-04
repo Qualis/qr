@@ -15,12 +15,19 @@
   [id]
   (key-store/has-value? (read-record id)))
 
+(defn id-for
+  [url]
+  (first (key-store/index-query connection BUCKET :destination url)))
+
 (defn create-record
   [url]
-  (let [id (id-generator/generate-id exists?)]
-    (key-store/store connection BUCKET id {:destination url}
-      {:content-type "application/clojure"})
-    id))
+  (let [existing-id (id-for url)]
+    (if (nil? existing-id)
+    (let [id (id-generator/generate-id exists?)]
+      (key-store/store connection BUCKET id {:destination url}
+      {:content-type "application/clojure" :indexes {:destination #{url}}})
+      id)
+    existing-id)))
 
 (defn delete-record
   [id]

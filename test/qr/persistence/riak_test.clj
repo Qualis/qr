@@ -9,7 +9,14 @@
 
 (deftest creates-record
   (let [id (persistence/create-record "http://www.google.com.au")]
-    (persistence/delete-record id)))
+))
+
+(deftest uses-existing-id
+  (let [id (persistence/create-record "http://www.google.com.au")]
+    (let [second-id (persistence/create-record "http://www.google.com.au")]
+      (persistence/delete-record id)
+      (persistence/delete-record second-id)
+      (is (= id second-id)))))
 
 (deftest finds-existing-by-id
   (let [id (persistence/create-record "http://www.google.com.au")]
