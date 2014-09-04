@@ -58,12 +58,12 @@
 (defn top-level-get-with-path-id
   [request]
   (let [id (get-in request [:path-params :id])]
-      (if (= "text/plain" (get (:headers request) "accept"))
-        (response/text-plain-response-for id persistence/get-destination-by-id)
-        (if (nil? (or (= "image/png" (get (:headers request) "accept"))
-            (get (:query-params request) :qr)))
-          (response/redirect-response-for id persistence/get-destination-by-id)
-          (response/image-png-response-for request id image/qr-for)))))
+    (if (= "text/plain" (get (:headers request) "accept"))
+      (response/text-plain-response-for id persistence/get-destination-by-id)
+      (if (nil? (or (= "image/png" (get (:headers request) "accept"))
+          (get (:query-params request) :qr)))
+        (response/redirect-response-for id persistence/get-destination-by-id)
+        (response/image-png-response-for request id image/qr-for)))))
 
 (defn top-level-post
   [request]

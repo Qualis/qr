@@ -5,6 +5,8 @@
             [qr.persistence.id :as id-generator]))
 
 (def ^:const BUCKET "resource")
+(def ^:const CONTENT_TYPE "application/clojure")
+
 (def connection (welle/connect-via-pb))
 
 (defn read-record
@@ -25,7 +27,7 @@
     (if (nil? existing-id)
     (let [id (id-generator/generate-id exists?)]
       (key-store/store connection BUCKET id {:destination url}
-      {:content-type "application/clojure" :indexes {:destination #{url}}})
+        {:content-type CONTENT_TYPE :indexes {:destination #{url}}})
       id)
     existing-id)))
 

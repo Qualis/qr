@@ -35,8 +35,8 @@
 (def ^:const POST_JSON_RESPONSE_HEADER
   (conj TEXT_HTML_RESPONSE_HEADER GET_PNG_LINK_HEADER))
 
-(def ^:const GET_METHOD_URL "http://www.qual.is/")
-(def ^:const POST_METHOD_URL "http://www.google.com.au/")
+(def ^:const GET_METHOD_URL "http://1.qual.is/")
+(def ^:const POST_METHOD_URL "http://2.qual.is/")
 (def ^:const POST_METHOD_ARGUMENT {:url POST_METHOD_URL})
 (def ^:const HOST_URL "http://localhost:8080/")
 (def ^:const HOST_HEADER {"Host" "localhost:8080"})
