@@ -21,7 +21,7 @@
   [url]
   (first (key-store/index-query connection BUCKET :destination url)))
 
-(defn create-record
+(defn add-record
   [url]
   (let [existing-id (id-for url)]
     (if (nil? existing-id)
@@ -30,6 +30,11 @@
         {:content-type CONTENT_TYPE :indexes {:destination #{url}}})
       id)
     existing-id)))
+
+(defn create-record
+  [url]
+  (locking add-record
+    (add-record url)))
 
 (defn delete-record
   [id]

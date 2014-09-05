@@ -4,7 +4,7 @@
             [clj-time.local :as time]
             [clj-time.format :as time-format]))
 
-(def ^:const LARGE_NUMBER_TEST_COUNT 1000)
+(def ^:const LARGE_NUMBER_TEST_COUNT 100)
 (def ^:const TEST_DATA "coconuts")
 
 (def date-formatter (time-format/formatters :mysql))
@@ -39,13 +39,20 @@
     (let [record (persistence/read-record id)]
       (is (nil? (persistence/get-value record))))))
 
-; (deftest creates-and-deletes-large-number-of-records
-;   (println (str "1: "(time-format/unparse date-formatter (time/local-now))))
-;   (doseq [i (range LARGE_NUMBER_TEST_COUNT)]
-;     (let [id (persistence/create-record (str "coconuts: " i))]
-;       (def list-of-id (conj list-of-id id))))
-;   (println (str "2: "(time-format/unparse date-formatter (time/local-now))))
-;   (doseq [id (distinct list-of-id)]
-;     (persistence/delete-record id))
-;   (println (str "3: "(time-format/unparse date-formatter (time/local-now))))
-;   (is (= (count (distinct list-of-id)) (count list-of-id))))
+(defn addLargeNumber
+  []
+  (doseq [i (range LARGE_NUMBER_TEST_COUNT)]
+    (let [id (persistence/create-record (str "coconuts: " i))]
+      (def list-of-id (conj list-of-id id)))))
+
+(deftest creates-and-deletes-large-number-of-records
+  (def one (future (addLargeNumber)))
+  (Thread/sleep 100)
+  (def two (future (addLargeNumber)))
+  (Thread/sleep 100)
+  (def three (future (addLargeNumber)))
+  @one
+  @two
+  @three
+  (doseq [id (distinct list-of-id)] (persistence/delete-record id))
+  (is (= (count (distinct list-of-id)) LARGE_NUMBER_TEST_COUNT)))
