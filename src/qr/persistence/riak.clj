@@ -21,7 +21,7 @@
   [url]
   (first (key-store/index-query connection BUCKET :destination url)))
 
-(defn add-record
+(defn- add-record
   [url]
   (let [existing-id (id-for url)]
     (if (nil? existing-id)
