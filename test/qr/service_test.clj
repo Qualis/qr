@@ -106,6 +106,7 @@
   (let [response (response-for service
       :get (str (get-url-with-id generated-id) "?qr=true")
       :headers (conj header/ACCEPT_HTML_TEXT HOST_HEADER))]
+    (is (= (:body response) (get-expected-qr-code generated-id)))
     (regex-header-matcher IMAGE_PNG_RESPONSE_HEADER (:headers response))))
 
 (deftest get-with-path-id-and-accept-header-text-html-redirects-to-destination

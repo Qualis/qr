@@ -2,7 +2,8 @@
   (:require [ring.util.response :as ring-response]
             [ring.util.request :as ring-request]
             [clojure.java.io :as io]
-            [qr.http.header :as header]))
+            [qr.http.header :as header]
+            [qr.http.request :as request]))
 
 (defn response-for
   [linkHeader linkHeaderValue contentTypeHeader body]
@@ -29,4 +30,4 @@
   (let [[linkHeader linkHeaderValue] (header/get-url-link-header id)]
     (response-for
       linkHeader linkHeaderValue "image/png"
-      (io/input-stream (qr-generator (ring-request/request-url request))))))
+      (io/input-stream (qr-generator (request/get-host-url request id))))))
