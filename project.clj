@@ -1,5 +1,5 @@
 (defproject qr "0.0.1-SNAPSHOT"
-  :description "ShortURL - URL shortening service"
+  :description "URL.qual.is - URL shortening service"
   :url "http://qr.qual.is/"
 
   :license {:name "Eclipse Public License"

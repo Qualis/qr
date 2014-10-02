@@ -1,6 +1,6 @@
 # qr
 
-ShortURL - URL shortening service
+URL.qual.is - URL shortening service
 
 ## Starting the application
 

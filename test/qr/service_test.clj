@@ -93,7 +93,7 @@
 
 (deftest get-with-no-id-serves-home
   (let [response (response-for service :get HOST_URL :headers HOST_HEADER)]
-    (is (.contains (:body response) "ShortURL - URL shortening service"))
+    (is (.contains (:body response) "URL.qual.is - URL shortening service"))
     (regex-header-matcher TEXT_HTML_RESPONSE_HEADER (:headers response))))
 
 (deftest get-with-id-query-string-serves-view
