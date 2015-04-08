@@ -2,6 +2,8 @@
 
 URL.qual.is - URL shortening service
 
+This project is developed using the [environment-qr](https://github.com/Qualis/environment-qr) vagrant environment.
+
 ## Starting the application
 
 Start the application in:
