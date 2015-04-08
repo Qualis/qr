@@ -11,7 +11,7 @@ Start the application in:
 1. developer mode (automatically detects code changes): `lein run-dev`
 2. production mode: `lein run`
 
-Navigate to [localhost:8080](http://localhost:8080/)
+Navigate to [localhost:8081](http://localhost:8081/)
 
 ## Testing the application
 
