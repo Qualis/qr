@@ -12,8 +12,8 @@ before_install:
   - echo "localhost ansible_connection=local" | sudo tee /etc/ansible/hosts
 
 install:
-  - git submodule init
-  - git submodule update
+  - git submodule init --recursive
+  - git submodule update --recursive
   - sudo ansible-playbook shippable-playbook.yml
 
 script:
