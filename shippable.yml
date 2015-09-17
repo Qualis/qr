@@ -16,6 +16,7 @@ install:
   - sudo ansible-playbook shippable-playbook.yml
 
 script:
+  - lein deps
   - lein vanity
   - lein bikeshed
   - lein test
