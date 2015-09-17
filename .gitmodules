@@ -1,0 +1,3 @@
+[submodule "environment-qr"]
+	path = environment-qr
+	url = https://github.com/svo/environment-qr.git
