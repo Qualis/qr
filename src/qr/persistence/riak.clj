@@ -7,7 +7,7 @@
 (def ^:const BUCKET "resource")
 (def ^:const CONTENT_TYPE "application/clojure")
 
-(def connection (welle/connect-via-pb))
+(def connection (welle/connect-via-pb "riak" 8087))
 
 (defn read-record
   [id]

@@ -81,4 +81,4 @@
   ::bootstrap/routes routes
   ::bootstrap/resource-path "/public"
   ::bootstrap/type :jetty
-  ::bootstrap/port 8081})
+  ::bootstrap/port 8080})
