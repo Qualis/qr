@@ -24,7 +24,7 @@ Navigate to [localhost:8080](http://localhost:8080/)
 
 Run: 
 
-* tests with `lein test`
+* tests with `lein test2junit`
 * code quality tests with `lein bikeshed`
 * code coverage report generation with `lein cloverage`
   * report written to: target/coverage/index.html

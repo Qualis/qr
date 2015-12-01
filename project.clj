@@ -23,17 +23,19 @@
     [clj-time "0.8.0"]
     [hashobject/hashids "0.2.0"]]
 
-  :plugins [[lein-bikeshed "0.1.7"]
-    [lein-vanity "0.2.0"]
-    [lein-cloverage "1.0.2"]]
-
   :min-lein-version "2.0.0"
 
   :resource-paths ["config", "resources"]
 
+  :test2junit-output-dir "target/test2junit"
+
   :profiles {
     :dev {:aliases {"run-dev" ["trampoline" "run" "-m" "qr.server/run-dev"]}
-      :dependencies [[io.pedestal/pedestal.service-tools "0.3.0"]]}
+          :dependencies [[io.pedestal/pedestal.service-tools "0.3.0"]]
+          :plugins [[test2junit "1.1.3"]
+                    [lein-bikeshed "0.1.7"]
+                    [lein-vanity "0.2.0"]
+                    [lein-cloverage "1.0.2"]]}
     :uberjar {:main qr.server
       :aot :all
       :dependencies [[io.pedestal/pedestal.jetty "0.3.0"]]}}
