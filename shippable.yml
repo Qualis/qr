@@ -11,8 +11,8 @@ script:
   - lein deps
   - lein vanity
   - lein bikeshed
-  - lein test
+  - lein test2junit
   - lein cloverage
 
 after_script:
-  - cp target/surefire-reports/* shippable/testresults
+  - cp target/test2junit/xml/* shippable/testresults
