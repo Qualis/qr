@@ -1,20 +1,11 @@
-language: clojure
-
-lein:
-  - lein2
+build_image: qualis/qr-ci
 
 before_install:
-  - sudo apt-get update
-  - sudo apt-get install software-properties-common -y
-  - sudo apt-add-repository ppa:ansible/ansible -y
-  - sudo apt-get update
-  - sudo apt-get install ansible -y
-  - sudo apt-get remove --purge riak -y
-  - echo "localhost ansible_connection=local" | sudo tee /etc/ansible/hosts
+  - printf "127.0.0.1\triak\n" >> /etc/hosts
 
-install:
-  - git submodule update --init --recursive
-  - sudo ansible-playbook shippable-playbook.yml
+before_script:
+  - mkdir -p shippable/testresults
+  - supervisord -c /etc/supervisor.conf
 
 script:
   - lein deps
@@ -22,3 +13,6 @@ script:
   - lein bikeshed
   - lein test
   - lein cloverage
+
+after_script:
+  - cp target/surefire-reports/* shippable/testresults
