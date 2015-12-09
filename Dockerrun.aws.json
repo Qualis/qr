@@ -1,0 +1,54 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "Authentication": {
+    "Bucket": "qr-application-version",
+    "Key": "dockerconfig.shippable.svanosselaer.qr.svo"
+  },
+  "volumes": [
+    {
+      "name": "riak",
+      "host": {
+        "sourcePath": "/var/lib/riak"
+      }
+    }
+  ],
+  "containerDefinitions": [
+    {
+      "name": "riak",
+      "image": "svanosselaer/riak",
+      "essential": true,
+      "memory": 128,
+      "mountPoints": [
+        {
+          "sourceVolume": "riak",
+          "containerPath": "/var/lib/riak"
+        }
+      ],
+      "portMappings": [
+        {
+          "hostPort": 8087,
+          "containerPort": 8087
+        },
+	{
+          "hostPort": 8098,
+          "containerPort": 8098
+        }
+      ]
+    },
+    {
+      "name": "qr",
+      "image": "<IMAGE_NAME>:<TAG>",
+      "essential": true,
+      "memory": 384,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 8080
+        }
+      ],
+      "links": [
+        "riak"
+      ]
+    }
+  ]
+}
