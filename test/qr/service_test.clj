@@ -38,8 +38,8 @@
 (def ^:const GET_METHOD_URL "http://1.qual.is/")
 (def ^:const POST_METHOD_URL "http://2.qual.is/")
 (def ^:const POST_METHOD_ARGUMENT {:url POST_METHOD_URL})
-(def ^:const HOST_URL "http://localhost:8081/")
-(def ^:const HOST_HEADER {"Host" "localhost:8081"})
+(def ^:const HOST_URL "http://localhost:8080/")
+(def ^:const HOST_HEADER {"Host" "localhost:8080"})
 
 (def ^:const REDIRECT_RESPONSE_HEADER
   (conj DEFAULT_HEADER {"Location" GET_METHOD_URL}))
